@@ -17,7 +17,7 @@ public class Logintutkija {
      * LUOKKAMUUTTUJAT
      ******************/
 	private static String sovNimi = "MLP logintutkija";
-	private static String sovVersio = "v1.2.43";
+	private static String sovVersio = "v1.2.44";
 	private static String sovNimiVersio = sovNimi + " " + sovVersio;
 	
 	

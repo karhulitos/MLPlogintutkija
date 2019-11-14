@@ -566,10 +566,10 @@ public class LogintutkijaOhjain {
             					int version = 0;
             					if (tiedostot.get(i).get(j)[0].equalsIgnoreCase("Date")) {
             						version = Integer. parseInt(tiedostot.get(i).get(j+1)[2]);
-                					if (version < 3105 && ikkuna.getTietolahde()  == 0) {
+                					if (version < 3105 && ikkuna.getTietolahde() == 0) {
                 						//lopetetaan kun versio 1768 löytyi
-                    					ikkuna.kirjoitaKonsolille(version + " -versio löydetty. Logintutkija tukee vain 3105 ja tuoreampia logeja. Lopetetaan.\n");
-                    					break exit;
+                    					ikkuna.kirjoitaKonsolille(version + " -versio löydetty. Logintutkija tukee vain 3105 ja tuoreempia logeja. Toimii tai ei toimi.\n");
+                    					//break exit;
                 					}
             					}
             				continue rivi;
