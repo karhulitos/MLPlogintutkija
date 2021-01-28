@@ -98,6 +98,7 @@ public class LogintutkijaGUI extends JPanel
 	private static String aikaAloitus = "Aika";
 	private static String aikaLopetus = "";
 	private JLabel lblLokiVersio = new JLabel("v" + lokiVersio + "R" + lokiRVersio);
+	private JLabel lblLammonKeruu = new JLabel(" ∆ lämmönkeruupiiri");
 	private static JLabel lblMittausvaliKentta = new JLabel("0 min");
 	private static JLabel lblKayntiaikaKentta = new JLabel("0");
 	private static JLabel lblKayntiaikaVrkKentta = new JLabel("00:00:00");
@@ -205,7 +206,7 @@ public class LogintutkijaGUI extends JPanel
         //nappulalle kuuntelija jotta tehdään jotain sen painamisen jälkeen
         haeDB.addActionListener(this);
 
-        luoKayrat = new JButton("Käyrät");
+        luoKayrat = new JButton("Trendit");
         //nappulalle kuuntelija jotta tehdään jotain sen painamisen jälkeen
         luoKayrat.addActionListener(this);
         luoKayrat.setEnabled(false);
@@ -303,7 +304,7 @@ public class LogintutkijaGUI extends JPanel
 
         lansipaneeli.add(new JLabel(" ∆ lämmitysvesi"));
         lansipaneeli.add(new JLabel(" ∆ käyttövesi"));
-        lansipaneeli.add(new JLabel(" ∆ lämmönkeruupiiri"));
+        lansipaneeli.add(lblLammonKeruu);
         lansipaneeli.add(new JLabel(" keruu tulo BT10"));
         lansipaneeli.add(new JLabel(" keruu meno BT11"));
         lansipaneeli.add(new JLabel(" kompr. taajuus"));
@@ -995,16 +996,24 @@ public class LogintutkijaGUI extends JPanel
 			}
 		
 		//Nibe mask
-		ExtensionFileFilter ef_nibe = new ExtensionFileFilter(new String[] { ".LOG", ".log" },"Nibe LOG tiedosto");
+		ExtensionFileFilter ef_nibe = new ExtensionFileFilter(new String[] { ".LOG", ".log" },"Nibe F LOG tiedosto");
+		ExtensionFileFilter ef_nibes = new ExtensionFileFilter(new String[] { ".CSV", ".csv" },"Nibe S CSV tiedosto");
 		ExtensionFileFilter ef_ctc = new ExtensionFileFilter(new String[] { ".CSV", ".csv" },"CTC CSV tiedosto");
 		if(vtf.equalsIgnoreCase("nibe")){
 			fc.setFileFilter(ef_nibe);
+			fc.addChoosableFileFilter(ef_nibes);
 			fc.addChoosableFileFilter(ef_ctc);
 		} else if (vtf.equalsIgnoreCase("ctc")) {
 			fc.addChoosableFileFilter(ef_nibe);
+			fc.addChoosableFileFilter(ef_nibes);
 			fc.setFileFilter(ef_ctc);
+		} else if (vtf.equalsIgnoreCase("nibes")) {
+			fc.addChoosableFileFilter(ef_nibe);
+			fc.setFileFilter(ef_nibes);
+			fc.addChoosableFileFilter(ef_ctc);
 		} else {
 			fc.addChoosableFileFilter(ef_nibe);
+			fc.addChoosableFileFilter(ef_nibes);
 			fc.addChoosableFileFilter(ef_ctc);
 		}
 		
@@ -1033,11 +1042,17 @@ public class LogintutkijaGUI extends JPanel
             	   if (listOfFiles[i].isFile()) 
             	   {
             		   filee = listOfFiles[i].getName();
-            		   if (fc.getFileFilter().getDescription().equals("Nibe LOG tiedosto"))
+            		   if (fc.getFileFilter().getDescription().equals("Nibe F LOG tiedosto"))
             		   {
             			   //asetetaan vtf muuttuja asetusten tallennusta varten
             			   vtf="nibe";
             			   if(filee.endsWith(".log") || filee.endsWith(".LOG")){
+                			   maara++;
+                			   logit.add(path + "/" + filee);
+            			   }
+            		   } else if (fc.getFileFilter().getDescription().equals("Nibe S CSV tiedosto")) {
+            			   vtf="nibes";
+            			   if(filee.endsWith(".csv") || filee.endsWith(".CSV")){
                 			   maara++;
                 			   logit.add(path + "/" + filee);
             			   }
@@ -1056,7 +1071,7 @@ public class LogintutkijaGUI extends JPanel
                   if (fc.getFileFilter().getDescription().equals("Kaikki tiedostot")) {
                   	vtf="kaikki";
                   }
-            	  konsoli.append("Hakemistossa logitiedostoja: " + maara + ". ");
+				konsoli.append("Hakemistossa logitiedostoja: " + maara + ". ");
             }
             else if (files.length > 1) {
             	konsoli.append("Valittuja logitiedostoja: " + files.length + ". ");
@@ -1067,12 +1082,25 @@ public class LogintutkijaGUI extends JPanel
             else if (file.isFile()) {
             	logit.add(path + "/" + filee);
             }
+			//mikä tiedostotyyppi valittu?
+			if (fc.getFileFilter().getDescription().equals("Nibe F LOG tiedosto"))
+			{
+				//asetetaan vtf muuttuja asetusten tallennusta varten
+				vtf="nibe";
+			} else if (fc.getFileFilter().getDescription().equals("Nibe S CSV tiedosto")) {
+				vtf="nibes";
+			} else if (fc.getFileFilter().getDescription().equals("CTC CSV tiedosto")) {
+				vtf="ctc";
+			}
         } else {
         	//tiedostovalinta keskeytetty
         	//konsoli.append("Keskeytetty.\n");
             valintalaatikko.setEnabled(true);
             return null;
         }
+		
+		//filetyypin arvaus
+		
 		//sortataan filenimen mukaan mikä on VVKKPP.LOG
 		Collections.sort(logit);
 		return logit;
@@ -1103,7 +1131,7 @@ public class LogintutkijaGUI extends JPanel
        			ohjain.aloitaSaie();
        		 } 
     	 } else if(source == luoKayrat) {
-    		 konsoli.append("Piirretään käyrä.\n");
+    		 konsoli.append("Piirretään trendit.\n");
     		 teeKayratIkkuna();
     		 //setCursor(null);
     		 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -1328,7 +1356,7 @@ public class LogintutkijaGUI extends JPanel
     @SuppressWarnings("deprecation")
 	private static JFreeChart teeKayrat(final XYDataset dataset) {
         final JFreeChart chart = ChartFactory.createTimeSeriesChart(
-            "Käyrät", 
+            "Trendit", 
             aikaAloitus + aikaLopetus, 
             "Lämpötilat/arvot",
             dataset, 
@@ -1398,8 +1426,6 @@ public class LogintutkijaGUI extends JPanel
         renderer.setSeriesPaint(28, Color.YELLOW); //lisäteho
         renderer.setSeriesPaint(30, Color.GRAY); //kompuran kierrokset
         renderer.setSeriesPaint(31, Color.RED); //teho
-        //renderer.setSeriesStroke(32, wideLine); //gp1
-        //renderer.setSeriesStroke(33, wideLine); //gp2
         renderer.setSeriesPaint(32, Color.YELLOW); //gp1
         renderer.setSeriesPaint(33, Color.MAGENTA); //gp2
         renderer.setSeriesPaint(34, Color.GRAY); //ep15_gp1
@@ -1438,7 +1464,6 @@ public class LogintutkijaGUI extends JPanel
     //   
     @SuppressWarnings("deprecation")
 	private static XYDataset teeTietoJoukko(ArrayList<String> kayra_taulukko_nimet, ArrayList<ArrayList<Integer>> kayra_taulukko, ArrayList<GregorianCalendar> logiaika) {
-
     		TimeSeries sisalt = new TimeSeries(kayra_taulukko_nimet.get(0), Second.class);
 	        TimeSeries ulkolt = new TimeSeries(kayra_taulukko_nimet.get(1), Second.class);
 	        TimeSeries bt2 = new TimeSeries(kayra_taulukko_nimet.get(2), Second.class);
@@ -1492,7 +1517,9 @@ public class LogintutkijaGUI extends JPanel
 		    TimeSeries bt71 = new TimeSeries(kayra_taulukko_nimet.get(41), Second.class);
 		    //ep15 GP2
 		    TimeSeries ep15_gp2 = new TimeSeries(kayra_taulukko_nimet.get(42), Second.class);
+
         try {
+        	 	
         for (int j=0; j<logiaika.size();j++) {
         	sisalt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(0).get(j))/10);
         	ulkolt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(1).get(j))/10);
@@ -1620,7 +1647,7 @@ public class LogintutkijaGUI extends JPanel
             @Override
             public void run()
             {
-            	final JFrame kayrakehys = new JFrame("Käyrät");
+            	final JFrame kayrakehys = new JFrame("Trendit");
                 kayrakehys.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 final JPanel panel = new JPanel();
                 panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -1655,9 +1682,7 @@ public class LogintutkijaGUI extends JPanel
                 TitledBorder title3;
                 title3 = BorderFactory.createTitledBorder("KV, suorasähkö, kompressori ja muut");
                 panel23.setBorder(title3);
-                
 
-                
                 JScrollPane scroller = new JScrollPane(kayrat);
                 scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
                 scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -1710,8 +1735,8 @@ public class LogintutkijaGUI extends JPanel
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(39, false, true);
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(40, false, true);
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(41, false, true);
-               	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(42, false, true);
-
+               	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(42, false, true);               	
+               	
                 //tehdään valintanappulat
                 for (int i = 0; i < ohjain.getKayra_taulukko().size(); i++) 
             	  {
@@ -1786,8 +1811,10 @@ public class LogintutkijaGUI extends JPanel
 	                panel24.setBorder(title4);
 	                
 	            	final JCheckBox autoupd_chkbox = new JCheckBox("autom. päivitys");
+	            	//asetetaan nappulan tila jos autoupdate oli jo päällä
+	            	autoupd_chkbox.setSelected(getAutoUpdChkbox());
 	                panel24.add(autoupd_chkbox);
-	                
+
 	                //checkboksin kuuntelija
 	                autoupd_chkbox.addItemListener(new ItemListener() {
 	                	
@@ -2007,6 +2034,14 @@ public class LogintutkijaGUI extends JPanel
 	}
 	public boolean getAutoUpdChkbox() {
 		return autoupdate;
+	}
+
+	public JLabel getLblLammonKeruu() {
+		return lblLammonKeruu;
+	}
+
+	public void setLblLammonKeruu(JLabel lblLammonKeruu) {
+		this.lblLammonKeruu = lblLammonKeruu;
 	}
 
 	public void setAutoUpdChkbox(boolean autoupdate) {
