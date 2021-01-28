@@ -3,7 +3,6 @@ package logintutkija;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-//import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -11,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-//import java.net.MalformedURLException;
-//import java.net.URL;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,6 +19,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -54,7 +52,7 @@ public class LogintutkijaMalli {
 		// luetaan konfiguraatiotiedot tiedostosta
 		//
 		public boolean haeKonfiggi() throws UnsupportedEncodingException {
-					
+			
 			InputStream input = null;
 			OutputStream output = null;
 		 
@@ -385,6 +383,7 @@ public class LogintutkijaMalli {
 		                		"bt21 INTEGER," +
 		                		"bt71 INTEGER," +
 		                		"ep15_gp2 INTEGER" +
+		                		//"bt16 INTEGER" +
 		                		")");
 
 		                //tarkastetaan uusien sarakkeiden olemassaolo
@@ -415,7 +414,7 @@ public class LogintutkijaMalli {
 		                				"," + ohjain.getKayra_taulukko().get(3).get(i) + 	//BT3
 		                				"," + ohjain.getKayra_taulukko().get(27).get(i) + 	//BT6
 		                				"," + ohjain.getKayra_taulukko().get(4).get(i) + 	//BT25
-		                				"," + ohjain.getKayra_taulukko().get(5).get(i) + 	//BT10
+		                				"," + ohjain.getKayra_taulukko().get(5).get(i) + 	//BT10 = BT28 VILPin tapauksessa 
 		                				"," + ohjain.getKayra_taulukko().get(6).get(i) + 	//BT11
 		                				"," + ohjain.getKayra_taulukko().get(7).get(i) + 	//BT12
 		                				"," + ohjain.getKayra_taulukko().get(8).get(i) + 	//BT14
@@ -447,6 +446,7 @@ public class LogintutkijaMalli {
 		                				"," + ohjain.getKayra_taulukko().get(40).get(i) + 	//BT21
 		                				"," + ohjain.getKayra_taulukko().get(41).get(i) + 	//BT71
 		                				"," + ohjain.getKayra_taulukko().get(42).get(i) +	//EP15_GP2
+		                				//"," + ohjain.getKayra_taulukko().get(43).get(i) +	//BT16=BT11 VILPin tapauksessa
 		                				")");
 		                	} catch (SQLException ex) {
 		                			if (!ex.getMessage().equals(edellinenvirhe)) {
@@ -483,6 +483,307 @@ public class LogintutkijaMalli {
 		        }
            }
 	   }
+
+	    // haeSQLiteKannasta
+		// haetaan logirivit paikallisesta tietokannasta
+	    //	
+	   public String[][] haeSQLiteKannasta2(String tietokanta_pvm_mista, String tietokanta_pvm_mihin) {
+	      //alustetaan logimuuttujat
+         ArrayList<String []> kaikkidbrivit = new ArrayList<String []>();
+         ArrayList<String> kentat = new ArrayList<String>();
+         boolean dbhit = false;
+		   String yhteysosoite = "jdbc:sqlite:" + asetukset.getProperty("paikallinen_tietokanta_osoite","logintutkija.db");
+          Connection yhteys = null;
+          String edellinenvirhe = "";
+
+          //Niben hämä
+          kentat.add("Divisors");
+          kentat.add("0"); //date
+          kentat.add("0"); //time
+          kentat.add("0");
+          kentat.add("0");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");//11
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");           //17
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");           //21
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");           //25
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10");           //29
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("1");
+          kentat.add("1"); //33
+          kentat.add("10");
+          kentat.add("1");
+          //kentat.add("1"); //pca ep15
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10"); //38
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10"); //41
+          kentat.add("10");
+          kentat.add("10");
+          kentat.add("10"); //44
+          kentat.add("10"); //45
+          kentat.add("0"); //46 R-version
+  
+          String[] sarakeotsikot = new String[kentat.size()];
+          sarakeotsikot = kentat.toArray(sarakeotsikot);
+          //ohjain.kirjoitaKonsolille("divisor pituus: " + tietue.length + "\n");
+          //kaikkidbrivit.add(tietue);
+          kentat.clear();
+
+          //otsikkorivi
+          kentat.add("Date");
+          kentat.add("Time");
+          kentat.add("version");
+          kentat.add("BT1");
+          kentat.add("BT2");
+          kentat.add("BT3");
+          kentat.add("BT6");
+          kentat.add("BT7");
+          kentat.add("EP14-BT10");
+          kentat.add("EP14-BT11");//10
+          kentat.add("EB100-EP14-BT12");
+          kentat.add("EB100-EP14-BT14");
+          kentat.add("EB100-EP14-BT17");
+          kentat.add("EB100-EP15-BT3");
+          kentat.add("EB100-EP15-BT10");
+          kentat.add("EB100-EP15-BT11");
+          kentat.add("EB100-EP15-BT12");
+          kentat.add("EB100-EP15-BT14");
+          kentat.add("EB100-EP15-BT17");
+          kentat.add("BT25");//20
+          kentat.add("BT71");
+          kentat.add("BT50");
+          kentat.add("BT51");
+          kentat.add("BT53");
+          kentat.add("BT54");
+          kentat.add("EB100-EP14-BP8");
+          kentat.add("EB100-EP15-BP8");
+          kentat.add("Tot.Int.Add");
+          kentat.add("EP14-BF1");
+          kentat.add("Alarm");//30
+          kentat.add("Calc. Supply");
+          kentat.add("Degree Minutes");
+          kentat.add("BT1-Average");
+          kentat.add("compr. freq. act.");
+          kentat.add("Relays PCA-Base EP14");
+          //kentat.add("Relays PCA-Base EP15");
+          kentat.add("GP1-speed EP14");
+          kentat.add("GP1-speed EP15");
+          kentat.add("GP2-speed EP14");
+          kentat.add("GP2-speed EP15");
+          kentat.add("Prio");//40
+          kentat.add("AZ1-BT20");
+          kentat.add("AZ1-BT21");
+          kentat.add("EB100-EP15 Prio");
+          kentat.add("EB100-EP14 Prio");
+          kentat.add("Model");//45
+          kentat.add("R-version");//46
+          
+          
+          String[] tietue = new String[kentat.size()];
+          tietue = kentat.toArray(tietue);
+          //ohjain.kirjoitaKonsolille("otsikko pituus: " + sarakeotsikot.length + "\n");
+          kaikkidbrivit.add(tietue);
+          kentat.clear();
+          
+		   try {
+	            Class.forName("org.sqlite.JDBC");
+	            yhteys = DriverManager.getConnection(yhteysosoite);
+	            if (yhteys != null) {
+	            	Statement statement = yhteys.createStatement();
+	                statement.setQueryTimeout(60);
+	            	  ohjain.kirjoitaKonsolille(" yhteys OK. ");
+               	try {
+               		Statement s = yhteys.createStatement();
+
+		                ResultSet rs = statement.executeQuery("select * from logit where " +
+		                         "time between '"+ tietokanta_pvm_mista +"' and '" + tietokanta_pvm_mihin + "' " +
+		                         		"order by time");
+               		ResultSet r = s.executeQuery("SELECT COUNT(*) AS rowcount FROM logit" +
+               				" where time between '" + tietokanta_pvm_mista +
+               				"' and '" + tietokanta_pvm_mihin + "'");
+               		r.next();
+               		int rowcount = r.getInt("rowcount");
+               		r.close();
+	                int row = 0;
+	                setProgress(1);
+	                while(rs.next()) {
+	                	dbhit=true;
+	                	String [] paivays = rs.getString(2).split("[ ]");
+	                	kentat.add(paivays[0]);				//date idx 0
+	                	kentat.add(paivays[1]);				//time idx 1
+	                   	kentat.add(rs.getString(3));		//versio idx 2
+	                   	kentat.add(rs.getString(5));		//BT1 idx 3
+						//tarkistetaan onko BT2 tyhjä vaikka olemassa
+						if (ohjain.isBt2_nolla()) {
+						 //kerrotaan että BT2 on kannassa
+						 ohjain.setBt2_nolla(false);
+						}
+	                   	kentat.add(rs.getString(6));		//BT2 idx 4
+	                   	kentat.add(rs.getString(7));		//BT3 idx 5
+						kentat.add(rs.getString(8));		//BT6 BT67:sta idx 6
+						kentat.add(rs.getString(33));		//BT7 idx 7
+						kentat.add(rs.getString(10));		//BT10 idx 8
+						kentat.add(rs.getString(11));		//BT11 idx 9
+						kentat.add(rs.getString(12));		//EP14-BT12 idx 10 
+              			kentat.add(rs.getString(13));		//EP14-BT14 idx 11
+              			kentat.add(rs.getString(14));		//EB100-EP14-BT17 idx 12
+              			//EP15
+             			//Tot Int Add laskentaa varten hämäys, kertoo ettei olekaan F1345 vaikka EP15 kentät löytyvät
+             			if (rs.getString(18).equalsIgnoreCase("0")) {
+             				kentat.add("32768");
+             			} else {
+             				kentat.add(rs.getString(18));		//EB100-EP15-BT3 //idx 13
+             			}
+              			kentat.add(rs.getString(19));		//EB100-EP15-BT10 //idx 14
+              			kentat.add(rs.getString(20));		//EB100-EP15-BT11 //idx 15
+              			kentat.add(rs.getString(21));		//EB100-EP15-BT12 //idx 16
+              			kentat.add(rs.getString(22));		//EB100-EP15-BT14 //idx 17
+              			kentat.add(rs.getString(23));		//EB100-EP15-BT17 //idx 18
+              			//EP15 off
+              			kentat.add(rs.getString(9));		//BT25  //idx 19
+              			kentat.add(rs.getString(40));		//BT71 //idx 20
+	                   	kentat.add(rs.getString(28));		//BT50 //idx 21
+             			kentat.add(rs.getString(34));		//BT51 //idx 22
+             			kentat.add(rs.getString(35));		//BT53 //idx 23
+             			kentat.add(rs.getString(36));		//BT54 //idx 24
+              			kentat.add("0");					//EP14BP8 //idx 25
+              			kentat.add("0");					//EP15BP8 //idx 26
+              			kentat.add(""+(int)(Double.parseDouble(rs.getString(25))/100));		//Tot.Int.Add //idx 27 kenttamappi.put("TotIntAdd", ""+(int)(Double.parseDouble(rs.getString(3))*100));
+	                   	kentat.add(rs.getString(26));		//BF1 //idx 28
+              			kentat.add("0");		  			//alarm  //idx 29
+	                   	kentat.add(rs.getString(16));		//Calc.Supply //idx 30
+	                   	kentat.add(rs.getString(15));		//DM //idx 31
+	                   	kentat.add(rs.getString(5));		//BT1 Avg //idx 32
+	                   	kentat.add(rs.getString(27));		//CFA //idx 33
+	                   	kentat.add(rs.getString(17));		//PCA EP14 //idx 34
+	                   	//kentat.add("0");					//PCA EP15 //idx 35
+	                   	kentat.add(rs.getString(30));		//GP1 EP14 //idx 35
+	                   	kentat.add(rs.getString(32));		//GP1 EP15 //idx 36
+	                   	kentat.add(rs.getString(31));		//GP2 EP14 //idx 37
+             			kentat.add(rs.getString(41));		//GP2 EP15
+	                   	kentat.add(rs.getString(37));		//Prio
+             			kentat.add(rs.getString(38));		//bt20 //40
+             			kentat.add(rs.getString(39));		//bt21 
+	                   	kentat.add(rs.getString(24));		//EP15-Prio
+             			kentat.add(rs.getString(37));		//EP14-Prio
+             			kentat.add(rs.getString(29));		//Model 44
+             			kentat.add(rs.getString(4));		//R-version
+                 			
+						tietue = new String[kentat.size()];
+						tietue = kentat.toArray(tietue);
+						kaikkidbrivit.add(tietue);
+						kentat.clear();
+          			 
+          			 	//päivitetään progress bar per luettu tietue
+						row++;
+						setProgress((row)*100/rowcount);
+		            }  
+	                if (dbhit == false){
+	                	ohjain.kirjoitaKonsolille("Logeja ei löytynyt.\n");
+	                }
+               	} catch (SQLException ex) {
+               		ohjain.kirjoitaKonsolille("\nPaikallinen tietokantavirhe: " + ex.getMessage() + "\n");
+               			if (!ex.getMessage().equals(edellinenvirhe)) {
+               				edellinenvirhe=ex.getMessage();
+               				if (ex.getMessage().contains("UNIQUE")) {
+               					ohjain.kirjoitaKonsolille("\nPaikallinen tietokantavirhe: logitieto on jo tallennettu aiemmin.\n");
+               				} else {
+               					ohjain.kirjoitaKonsolille("\nPaikallinen tietokantavirhe: " + ex.getMessage() + "\n");
+               				}
+               			}
+               	}
+
+	                yhteys.close();
+	                if (edellinenvirhe.isEmpty()) {
+	                	ohjain.kirjoitaKonsolille("Tietokantakysely suoritettu.\n");
+	                }
+	            }
+	        } catch (ClassNotFoundException ex) {
+	        	ohjain.kirjoitaKonsolille("Virhe: " + ex.getMessage() + "\n");
+	        } catch (SQLException ex) {
+	        	ohjain.kirjoitaKonsolille("Virhe: " + ex.getMessage() + "\n");
+	        } finally {
+	            try
+	            {
+	              if(yhteys != null)
+	                yhteys.close();
+	            }
+	            catch(SQLException e)
+	            {
+	            	ohjain.kirjoitaKonsolille("Virhe: " + e.getMessage() + "\n");
+	            }
+	        }
+		   setProgress(100);
+		   if (kaikkidbrivit.size() > 2) {
+			   return taulukko2D(sarakeotsikot,kaikkidbrivit);
+		   } else {
+			   return null;
+		   }
+
+	   }
+	   
+       // taulukko2D
+	   	// 2-tasoinen lista helpottamaan eri mallien logien lukemista
+	   	public String[][] taulukko2D(String[] sarakeotsikot, ArrayList<String []> kaikkidbrivit) {
+	   		List<List<String>> sarakelista = new ArrayList<List<String>>();
+	   		
+	   		for(String sarakeotsikko: sarakeotsikot) {
+	   			//ohjain.kirjoitaKonsolille("SARAKKEET: " + sarakeotsikko + "\n");
+	   		    List<String> aliLista = new ArrayList<String>();
+	   		    aliLista.add(sarakeotsikko);
+	   		    sarakelista.add(aliLista);
+	   		}
+	   		for(String[] elementit: kaikkidbrivit) {
+	   		    //ohjain.kirjoitaKonsolille("ELEMENTTEJÄ: " + elementit.length + "\n");
+	   		    for(int i = 0; i < elementit.length; i++) {
+	   		    	sarakelista.get(i).add(elementit[i]);
+	   		    }
+	   		}	   		
+	
+	   		int sarakkeet = sarakelista.size();
+	   		int rivit = sarakelista.get(0).size();
+	   		String[][] taulukko2D = new String[rivit][sarakkeet];
+	   		//String[][] taulukko2D = new String[3][3];
+	   		for (int arvorivi = 0; arvorivi < rivit; arvorivi++) {
+	   		    for (int sarake = 0; sarake < sarakkeet; sarake++) {
+	   		    	taulukko2D[arvorivi][sarake] = sarakelista.get(sarake).get(arvorivi);
+	   		    }
+	   		}
+	   		//printMatrix(taulukko2D);
+	   		return taulukko2D;
+	   	}
+	   	
+    	//Displays a 2d array in the console, one line per row.
+    	public void printMatrix(String[][] grid) {
+    	    for(int r=0; r<grid.length; r++) {
+    	       for(int c=0; c<grid[r].length; c++)
+    	       ohjain.kirjoitaKonsolille(grid[r][c] + " ");
+    	       ohjain.kirjoitaKonsolille(grid[r].length + " kpl kenttiä");
+    	       ohjain.kirjoitaKonsolille("\n");
+    	    }
+    	}
 	   
 	    // haeSQLiteKannasta
 		// haetaan logirivit paikallisesta tietokannasta
@@ -544,6 +845,7 @@ public class LogintutkijaMalli {
            kentat.add("10");
            kentat.add("10"); //44
            kentat.add("10"); //45
+           kentat.add("10"); //46
    
            String[] tietue = new String[kentat.size()];
            tietue = kentat.toArray(tietue);
@@ -598,6 +900,7 @@ public class LogintutkijaMalli {
            kentat.add("EB100-EP15 Prio");
            kentat.add("EB100-EP14 Prio");
            kentat.add("Model");//45
+           kentat.add("BT16");//46
            
            
            tietue = new String[kentat.size()];
@@ -698,6 +1001,7 @@ public class LogintutkijaMalli {
 		                   	kentat.add(rs.getString(24));		//EP15-Prio
                   			kentat.add("0");					//EP14-Prio
                   			kentat.add(rs.getString(29));		//Model 44
+                  			kentat.add(rs.getString(42));		//BT16 45
                   			
                			 tietue = new String[kentat.size()];
                			 tietue = kentat.toArray(tietue);

@@ -16,8 +16,8 @@ public class Logintutkija {
     /******************
      * LUOKKAMUUTTUJAT
      ******************/
-	private static String sovNimi = "MLP logintutkija";
-	private static String sovVersio = "v1.2.44";
+	private static String sovNimi = "LP logintutkija";
+	private static String sovVersio = "v1.3.3";
 	private static String sovNimiVersio = sovNimi + " " + sovVersio;
 	
 	
@@ -31,6 +31,7 @@ public class Logintutkija {
 		LogintutkijaOhjain ohjain = new LogintutkijaOhjain(malli, ikkuna);
 		ikkuna.rekisteröiOhjain(ohjain);
 		malli.rekisteröiOhjain(ohjain);
+		
 		//luetaan konfiguraatio
 		if (malli.haeKonfiggi() == false)
 			malli.haeKonfiggi();
