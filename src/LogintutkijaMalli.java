@@ -86,8 +86,30 @@ public class LogintutkijaMalli {
 				//F1345 lisäys
 				ohjain.setF1345LisaysAskel(asetukset.getProperty("F1345_lisaysaskel","0"));
 				
-				//Lämmitystarveluku
-				//ohjain.setHDDGet(asetukset.getProperty("lammitystarvelukujenhaku","0"));
+				//CTC mäppi
+				//malli,DATETIME 0,COMPRESSOR_RUNNING 68,HEATING 1,HOTWATER 7,tot.int.add 10,BT7 11, BT6 14, BT1 16, BT12 18,
+				//calc.supply 19, DM 22, BT10 50, BT11 51, CFA 53, BT3 55, BT2 56, BT14 57, BT17 58
+				ohjain.setCTCmappi(asetukset.getProperty("CTC","GSi12,"
+						+ "0," //DATETIME
+						+ "68," //COMPRESSOR_RUNNING
+						+ "1," //HEATING
+						+ "7," //HOTWATER
+						+ "10," //tot.int.add
+						+ "11," //BT7
+						+ "14," //BT6
+						+ "16," //BT1
+						+ "17," //BT12
+						+ "18," //calc.supply
+						+ "19," //BT50
+						+ "22," //DegreeMinutes
+						+ "50," //BT10
+						+ "51," //BT11
+						+ "53," //Compressor Frequency Active
+						+ "55," //BT3
+						+ "56," //BT2
+						+ "57," //BT14
+						+ "58" //BT17
+						));
 			}
 		    catch(FileNotFoundException ex)
 		    {
@@ -293,8 +315,9 @@ public class LogintutkijaMalli {
 			//F1345 ulkoinen lisäys yksi askel kW
 			asetukset.setProperty("F1345_lisaysaskel", "0");
 			
-			//lämmitystarveluku, haetaanko?
-			//asetukset.setProperty("lammitystarvelukujenhaku", "0");
+			//CTC mäppi
+			//kts mäppäys asetustiedoston luennasta
+			asetukset.setProperty("CTC","GSi12,0,68,1,7,10,11,14,16,17,18,19,22,50,51,53,55,56,57,58");
 			
 		}
 	
