@@ -757,7 +757,7 @@ public class LogintutkijaOhjain {
 	        					tia_kerroin=100;
 	        		        	if ( ! ikkuna.getLblMLPMalli().getText().contains("VILP")) {
 	            		        	cfa_haku = "Kompressorin taajuus, nykyinen [Hz]";
-	            		        	kaynti_haku = "(ASB)";
+	            		        	kaynti_haku = "ASB";
 	            					keruu_sisaan_haku = "BT10";
 	            					keruu_ulos_haku = "BT11";
 	        		        	}
