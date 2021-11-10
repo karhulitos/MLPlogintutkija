@@ -1317,6 +1317,8 @@ public class LogintutkijaOhjain {
 	            				prosessinalku=0;
 	            			}
 	            			
+	            			//ikkuna.kirjoitaKonsolille("PCA: " + relaysPCAbase.get(relaysPCAbase.size()-1) + "\n");
+	            			
 	            			// Käyttötilat
 	            			// Relays PCA Base, on binäärilukuna 0b00000000
 	            			// bitti 0 = kompressorin tila, 0=pois, 1=päällä
@@ -1329,7 +1331,9 @@ public class LogintutkijaOhjain {
 	            			//
 	            			// Relays PCA-Base 7
 	            			// otetaan PCA-Base ylös tallennusta varten
-	            			if (relaysPCAbase.get(relaysPCAbase.size()-1) == 7 || relaysPCAbase.get(relaysPCAbase.size()-1) == 3) {
+	            			if ((relaysPCAbase.get(relaysPCAbase.size()-1) == 7 || relaysPCAbase.get(relaysPCAbase.size()-1) == 3)
+	            					&& cfa.get(cfa.size()-1) > 0
+	            					) {
 	            				//0b00000111 = 7, F2040 = 3
 	            				//käyntiaika, Relays PCA-Base on idx 20, arvo 7 = lämmitys
 	            				//jos prio 40, lämmitetään uima-allasta
@@ -1339,7 +1343,7 @@ public class LogintutkijaOhjain {
 		            				if (Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)]) == 40) {
 		            					kaytto_ua++;
 		            				}
-	            				}		
+	            				}
 	    	        			kaytto_la++;
 	    	        			//skipataan pari ensimmäistä arvoa koska prosessi ei ole stabiloitunut	
 	    	        			if(prosessinalku>=120){		
@@ -1420,7 +1424,9 @@ public class LogintutkijaOhjain {
  
 		    	        			} // jos mennyt 120 sek
 	    	        		// Relays PCA-Base 15 tai 11
-	            			} else if (relaysPCAbase.get(relaysPCAbase.size()-1) == 15 || relaysPCAbase.get(relaysPCAbase.size()-1) == 11) {
+	            			} else if ((relaysPCAbase.get(relaysPCAbase.size()-1) == 15 || relaysPCAbase.get(relaysPCAbase.size()-1) == 11)
+            					&& cfa.get(cfa.size()-1) > 0
+	            					) {
 	    	        			//0b00001111 = 15
 	    	        			//käyntiaika, Relays PCA-Base on idx 20, arvo 15 = käyttövesi, 11 = kayttovesi FLM:n patterilla (huuhaata?)
 	    	        			kaytto_kv++;
