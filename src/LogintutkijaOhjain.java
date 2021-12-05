@@ -192,6 +192,7 @@ public class LogintutkijaOhjain {
 	private String ctcmappi = "GSi12,0,68,1,7,10,11,14,16,17,18,19,22,50,51,53,55,56,57,58";
 	private String nibecontroller = "F";
 	private int kerroin = 1;
+	private int gpkerroin = 1;
 	private String bf1_haku = "EP14-BF1";
 	private String cfa_haku = "compr. freq. act";
 	private String bt50_haku = "BT50";
@@ -479,6 +480,7 @@ public class LogintutkijaOhjain {
         	keruu_ulos_haku = bt11_haku;
         	nibecontroller = "F";
         	kerroin = 1;
+        	gpkerroin = 1;
         	cs_haku = "Calc. Supply";
         	dm_haku = "Degree Minutes";
         	bf1_haku = "EP14-BF1";
@@ -754,6 +756,7 @@ public class LogintutkijaOhjain {
 	    		        		cfa_haku = "Nykyinen kompressorin taajuus (EB101)";
 	        		        	bt50_haku = "Roomsensor 1-1";
 	        					kerroin=10;
+	        					gpkerroin=1;
 	        					tia_kerroin=100;
 	        		        	if ( ! ikkuna.getLblMLPMalli().getText().contains("VILP")) {
 	            		        	cfa_haku = "Kompressorin taajuus, nykyinen [Hz]";
@@ -771,6 +774,7 @@ public class LogintutkijaOhjain {
 						if (ikkuna.getLblMLPMalli().getText().contains("CTC")) { //CTC
 							if (ikkuna.getTietolahde()  == 0) {
 								kerroin = 10;
+								gpkerroin = kerroin;
 								tia_kerroin = 100; 
 							}
 						}
@@ -1099,7 +1103,7 @@ public class LogintutkijaOhjain {
 	            			//gp1 EP14 
 	            			//if (haeMapista(kentat,"GP1-speed EP14",false) != -1) {
 	            			if (haeMapista(kentat,ep14_gp1_haku,false) != -1) {
-	            				gp1.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,ep14_gp1_haku,false)],kerroin));
+	            				gp1.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,ep14_gp1_haku,false)],gpkerroin));
 	            			} else {
 	            				gp1.add(0);
 	            			}
@@ -1107,7 +1111,7 @@ public class LogintutkijaOhjain {
 	            			//gp2 EP14
 	            			//if (haeMapista(kentat,"GP2-speed EP14",false) != -1) {
 	            			if (haeMapista(kentat,ep14_gp2_haku,false) != -1) {
-	            				gp2.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,ep14_gp2_haku,false)],kerroin));
+	            				gp2.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,ep14_gp2_haku,false)],gpkerroin));
 	            			} else {
 	            				gp2.add(0);
 	            			}
@@ -1317,7 +1321,7 @@ public class LogintutkijaOhjain {
 	            				prosessinalku=0;
 	            			}
 	            			
-	            			//ikkuna.kirjoitaKonsolille("PCA: " + relaysPCAbase.get(relaysPCAbase.size()-1) + "\n");
+	            			//gpikkuna.kirjoitaKonsolille("PCA: " + relaysPCAbase.get(relaysPCAbase.size()-1) + "\n");
 	            			
 	            			// Käyttötilat
 	            			// Relays PCA Base, on binäärilukuna 0b00000000
@@ -1572,7 +1576,8 @@ public class LogintutkijaOhjain {
                 			//TEHO laskenta
                 			//int bt12, int bt3, int bt14, int bt17, int bt10, int cop35, int cop45
                 			//int bt12/bt2, int bt3, double ominaislampokapasiteetti_vesi, double virtaus
-                			if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1x55")) {
+                			if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1x55") ||
+                					nibecontroller.equals("S")) {
                 				teho.add(laskeTEHO(bt2.get(bt2.size()-1), bt3.get(bt3.size()-1), bf1.get(bf1.size()-1)));
                 			} else if (ikkuna.getLblMLPMalli().getText().contains("VILP")) {
                 				if (ikkuna.getTietolahde() == 0) {
