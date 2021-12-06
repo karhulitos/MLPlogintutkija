@@ -196,6 +196,7 @@ public class LogintutkijaOhjain {
 	private String bf1_haku = "EP14-BF1";
 	private String cfa_haku = "compr. freq. act";
 	private String bt50_haku = "BT50";
+	private boolean iIsStopped = false;
 	
 	public LogintutkijaOhjain(final LogintutkijaMalli malli, final LogintutkijaGUI ikkuna) {
 		this.malli = malli;
@@ -497,6 +498,7 @@ public class LogintutkijaOhjain {
         	long free2=50000000;
         	int kaikkirivit = 0;        	
         	ikkuna.getLblLammonKeruu().setText(" ∆ lämmönkeruupiiri");
+        	iIsStopped = false;
 
         	//kesäajan aiheuttaman käyrien taiteellisen piirron poisto
 			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -1233,6 +1235,14 @@ public class LogintutkijaOhjain {
 	            			//compressor frequency active
 	            			if (haeMapista(kentat,cfa_haku,false) != -1 && cfa_fake==false){
 	            				cfa.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cfa_haku,false)],kerroin));
+	            				//S-sarjalainen, ASB sanoo kompressorin olevan päällä, mutta kierrokset ovat nollissa
+	            				if (muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cfa_haku,false)],kerroin) == 0) {
+	            					//invertteri ei käy
+	            					iIsStopped=true;
+	            					//ikkuna.kirjoitaKonsolille("Invertteri: " + cfa_haku + ": " + muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cfa_haku,false)],kerroin) + "\n");
+	            				} else {
+	            					iIsStopped=false;
+	            				}
 	            			} else {
 	            				//F/S1x45 CFA = 50
 	            				if (kompr_kaynnissa) {
@@ -1304,7 +1314,6 @@ public class LogintutkijaOhjain {
             							relaysPCAbase.add(7);
             							
             						} else if (tiedostot.get(i)[j][haeMapista(kentat,"HOTWATER",false)].equalsIgnoreCase("1")) {
-
             							relaysPCAbase.add(15);
             						} else {
             							relaysPCAbase.add(0);
@@ -1321,7 +1330,17 @@ public class LogintutkijaOhjain {
 	            				prosessinalku=0;
 	            			}
 	            			
-	            			//gpikkuna.kirjoitaKonsolille("PCA: " + relaysPCAbase.get(relaysPCAbase.size()-1) + "\n");
+	            			//ikkuna.kirjoitaKonsolille("PCA: " + relaysPCAbase.get(relaysPCAbase.size()-1) + "\n");
+							/*
+							 * if
+							 * (tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP14 Prio",false)].equals("2"))
+							 * { ikkuna.kirjoitaKonsolille("Prio EP14: " +
+							 * tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP14 Prio",false)] + "\n"); } if
+							 * (tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP15 Prio",false)].equals("2"))
+							 * { ikkuna.kirjoitaKonsolille("Prio EP15: " +
+							 * tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP15 Prio",false)] + "\n"); }
+							 */
+	            			
 	            			
 	            			// Käyttötilat
 	            			// Relays PCA Base, on binäärilukuna 0b00000000
@@ -1335,8 +1354,9 @@ public class LogintutkijaOhjain {
 	            			//
 	            			// Relays PCA-Base 7
 	            			// otetaan PCA-Base ylös tallennusta varten
+	            			
 	            			if ((relaysPCAbase.get(relaysPCAbase.size()-1) == 7 || relaysPCAbase.get(relaysPCAbase.size()-1) == 3)
-	            					&& cfa.get(cfa.size()-1) > 0
+	            					&& iIsStopped == false //invertteri pysyhtynyt vai ei?
 	            					) {
 	            				//0b00000111 = 7, F2040 = 3
 	            				//käyntiaika, Relays PCA-Base on idx 20, arvo 7 = lämmitys
@@ -1429,7 +1449,7 @@ public class LogintutkijaOhjain {
 		    	        			} // jos mennyt 120 sek
 	    	        		// Relays PCA-Base 15 tai 11
 	            			} else if ((relaysPCAbase.get(relaysPCAbase.size()-1) == 15 || relaysPCAbase.get(relaysPCAbase.size()-1) == 11)
-            					&& cfa.get(cfa.size()-1) > 0
+	            					&& iIsStopped == false //invertteri pysyhtynyt vai ei?
 	            					) {
 	    	        			//0b00001111 = 15
 	    	        			//käyntiaika, Relays PCA-Base on idx 20, arvo 15 = käyttövesi, 11 = kayttovesi FLM:n patterilla (huuhaata?)
