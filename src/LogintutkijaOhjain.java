@@ -780,13 +780,14 @@ public class LogintutkijaOhjain {
 								tia_kerroin = 100; 
 							}
 						}
-
 						
         				//datarivi
             			if ( (!tiedostot.get(i)[j][0].equalsIgnoreCase("Divisors") &&
 	    					!tiedostot.get(i)[j][0].equalsIgnoreCase("Date")) && 
 	    					!tiedostot.get(i)[j][0].equalsIgnoreCase("DateTime") //S-ohjain
             					) {
+            				
+
             				
             				String [] paivays;
             				String [] aika;
@@ -847,13 +848,17 @@ public class LogintutkijaOhjain {
 	            				edellinen_logiaika = new GregorianCalendar(vuosi, kuukausi, paiva, tunti, minuutti, sekunti);
 	            				samatajat=1;
 	            			}  			
-	            			
+     			
 	    	        		//version
 	            			if (!ikkuna.getLblMLPMalli().getText().contains("CTC")) {
 		    	        		if (lokiVersio.equalsIgnoreCase("0000")) {
 		    	        			if (haeMapista(kentat,version_haku,false) != -1){ //version=43001
 			    	        			ikkuna.getLblLokiVersio().setText("v" + tiedostot.get(i)[j][haeMapista(kentat,version_haku,false)]); //version=43001
 			    	        			lokiVersio=tiedostot.get(i)[j][haeMapista(kentat,version_haku,false)];
+		    	        			} else if ( haeMapista(kentat,"Ohjelmistoversio",false) != -1 ) {
+		    	        				version_haku = "Ohjelmistoversio";
+		    	        				ikkuna.getLblLokiVersio().setText("v" + tiedostot.get(i)[j][haeMapista(kentat,"Ohjelmistoversio",false)]); //version=Ohjelmistoversio
+			    	        			lokiVersio=tiedostot.get(i)[j][haeMapista(kentat,"Ohjelmistoversio",false)];
 		    	        			} else if ( haeMapista(kentat,"id:60529",false) != -1 ) {
 		    	        				version_haku = "id:60529";
 		    	        				ikkuna.getLblLokiVersio().setText("v" + tiedostot.get(i)[j][haeMapista(kentat,"id:60529",false)]); //version=id:60529
@@ -895,6 +900,8 @@ public class LogintutkijaOhjain {
 	            				aloitusaika=true;
 	            			}
 
+
+	            			
 	    	        		//bt1
 	            			if (haeMapista(kentat,bt1_haku,bt1_strict) != -1) { //mittauspisteen numero on tarkin
 	            				//bt1.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,bt1_haku,bt1_strict)]));
@@ -1158,6 +1165,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				ep15_bt3.add(0);
 	            			}
+
 	            			//EP15 BT10
 	            			if (haeMapista(kentat,"EP15-BT10",false) != -1) {
 	            				ep15_bt10.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT10",false)]));
@@ -1265,6 +1273,8 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				bt21.add(0);
 	            			}
+	            			
+
 	            			
 	            			//Relays PCA-Base
 	            			//VILPissä PCA ei kerro tilaa, ainakaan luotettavasti, kannasta luettuna PCA jo kunnossa
