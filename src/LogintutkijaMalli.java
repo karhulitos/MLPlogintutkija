@@ -425,12 +425,20 @@ public class LogintutkijaMalli {
 		                statement.executeUpdate("create index if not exists time_idx on logit (time)");
 		                //aloitetaan transaktio jotta kantaankirjoitus ei ole hidasta (muutoin joka update/insert on oma commit:nsa)
 		                statement.executeUpdate("begin transaction");
+		                //S-sarjalaisten logiversiofiksi
+		                String version = LogintutkijaOhjain.getLokiVersio();
+		                if (version.indexOf('.') != -1) {
+		                	//ohjain.kirjoitaKonsolille("\nVersiossa pisteitä\n");
+		                	version = version.replace(".", "");
+		                }
+		                
 		                for (int i=0;i<ohjain.getLogiaika().size();i++) {
 		                	//rivit kayra_taulukossa
 		                	try {
 		                		statement.executeUpdate("insert into logit values(NULL, '" +
+		                		//String sql = "insert into logit values(NULL, '" +
 		                		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(ohjain.getLogiaika().get(i).getTime()) + "'" + //date
-		                				"," + LogintutkijaOhjain.getLokiVersio() +		 				//version
+		                				"," + version +		 				//version
 		                				"," + LogintutkijaOhjain.getLokiRVersio() +						//R version
 		                				"," + ohjain.getKayra_taulukko().get(1).get(i) + 	//BT1
 		                				"," + ohjain.getKayra_taulukko().get(2).get(i) + 	//BT2
@@ -471,6 +479,7 @@ public class LogintutkijaMalli {
 		                				"," + ohjain.getKayra_taulukko().get(42).get(i) +	//EP15_GP2
 		                				//"," + ohjain.getKayra_taulukko().get(43).get(i) +	//BT16=BT11 VILPin tapauksessa
 		                				")");
+		                				//ohjain.kirjoitaKonsolille(sql + "\n");
 		                	} catch (SQLException ex) {
 		                			if (!ex.getMessage().equals(edellinenvirhe)) {
 		                				edellinenvirhe=ex.getMessage();
@@ -478,6 +487,7 @@ public class LogintutkijaMalli {
 		                					ohjain.kirjoitaKonsolille("\nPaikallinen tietokantavirhe: logitieto on jo tallennettu aiemmin.\n");
 		                				} else {
 		                					ohjain.kirjoitaKonsolille("\nPaikallinen tietokantavirhe: " + ex.getMessage() + "\n");
+		                					
 		                				}
 		                			}
 		                	}
@@ -570,7 +580,6 @@ public class LogintutkijaMalli {
   
           String[] sarakeotsikot = new String[kentat.size()];
           sarakeotsikot = kentat.toArray(sarakeotsikot);
-          //ohjain.kirjoitaKonsolille("divisor pituus: " + tietue.length + "\n");
           //kaikkidbrivit.add(tietue);
           kentat.clear();
 
@@ -718,6 +727,8 @@ public class LogintutkijaMalli {
 						tietue = kentat.toArray(tietue);
 						kaikkidbrivit.add(tietue);
 						kentat.clear();
+						
+						//ohjain.kirjoitaKonsolille("Koko: " + kaikkidbrivit.size() + "\n");
           			 
           			 	//päivitetään progress bar per luettu tietue
 						row++;
