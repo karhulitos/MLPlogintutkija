@@ -261,7 +261,7 @@ public class LogintutkijaMalli {
 			asetukset.setProperty("tietokanta_nimi", "talologger");
 			asetukset.setProperty("tietokanta_kayttaja", "tunnus");
 			asetukset.setProperty("tietokanta_salasana", "salasana");
-			asetukset.setProperty("tietokanta_osoite", "demopumppaaja.ddns.net");
+			asetukset.setProperty("tietokanta_osoite", "demopumppaaja.dy.fi");
 			
 			//paikallinen tallennus
 			asetukset.setProperty("paikallinen_tietokanta_tallennus", "1");

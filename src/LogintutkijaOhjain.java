@@ -684,6 +684,7 @@ public class LogintutkijaOhjain {
 	        				} else if (haeMapista(kentat,"EB100-EP15 Prio",false) != -1) {
 								//luultavasti F1345
 								ikkuna.getLblMLPMalli().setText(nibecontroller + "1345");
+			        			tia_haku="Add.Step";
 							//1x55
 							//
 							//
@@ -900,8 +901,6 @@ public class LogintutkijaOhjain {
 	            				LogintutkijaGUI.setAikaAloitus(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()));
 	            				aloitusaika=true;
 	            			}
-
-
 	            			
 	    	        		//bt1
 	            			if (haeMapista(kentat,bt1_haku,bt1_strict) != -1) { //mittauspisteen numero on tarkin
@@ -1205,6 +1204,7 @@ public class LogintutkijaOhjain {
 		            				add_step.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"Add.Step",false)])*100);
 	            				} else {
 		            				//F1345 DB
+	            					//tia_haku = "Add.Step";
 		            				add_step.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)]));
 	            				}
 
@@ -1372,7 +1372,7 @@ public class LogintutkijaOhjain {
 	            				//käyntiaika, Relays PCA-Base on idx 20, arvo 7 = lämmitys
 	            				//jos prio 40, lämmitetään uima-allasta
 	            				//uima-allaskin on lämmitystä, mutta erotellaan se käyntiaikasuhteessa
-	            				
+
 	            				if (haeMapista(kentat,"Prio",false) != -1) {
 		            				if (Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)]) == 40) {
 		            					kaytto_ua++;
@@ -1420,7 +1420,9 @@ public class LogintutkijaOhjain {
 	
 	    	        				//delta keruu tulo idx8 (BT10) - tulo idx9 (BT11)
 		            				lampo_delta_keruu.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin) - muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_sisaan_haku,false)],kerroin));
-	            					//etsitään matalin ja korkein bt10
+	            					
+
+		            				//etsitään matalin ja korkein bt10
 	            					//matalin
 	            					if (bt10_min > muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_sisaan_haku,false)],kerroin)) {
 	            						bt10_min = muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_sisaan_haku,false)],kerroin);
@@ -1438,12 +1440,13 @@ public class LogintutkijaOhjain {
 	            					if (bt11_max < muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin)) {
 	            						bt11_max = muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin);
 	            					}
-
+	            					
 	    	        				if (1 < muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)],tia_kerroin)) {
+
 	    		        				//lisälämpö
 	    	        					if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345") &&
-	    	        							Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"Add.Step",false)]) != 32768){
-	    	        						lamm_sahko.add(F1345LisaysAskel*Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"Add.Step",false)]));
+	    	        							Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)]) != 32768){
+	    	        						lamm_sahko.add(F1345LisaysAskel*Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)]));
 	    	        					} else {
 	    	        						lamm_sahko.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)],tia_kerroin));
 	    	        					}
@@ -1457,11 +1460,10 @@ public class LogintutkijaOhjain {
 			    	        					kompr_kaynnistyksia--;
 			    	        				}
 			    	        			}
-
 		    	        			} // jos mennyt 120 sek
 	    	        		// Relays PCA-Base 15 tai 11
 	            			} else if ((relaysPCAbase.get(relaysPCAbase.size()-1) == 15 || relaysPCAbase.get(relaysPCAbase.size()-1) == 11)
-	            					&& iIsStopped == false //invertteri pysyhtynyt vai ei?
+	            					&& iIsStopped == false //invertteri pysähtynyt vai ei?
 	            					) {
 	    	        			//0b00001111 = 15
 	    	        			//käyntiaika, Relays PCA-Base on idx 20, arvo 15 = käyttövesi, 11 = kayttovesi FLM:n patterilla (huuhaata?)
@@ -1529,10 +1531,6 @@ public class LogintutkijaOhjain {
 	            					if (bt11_max < muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin)) {
 	            						bt11_max = muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin);
 	            					}
-	            					
-	        	        			if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345") && ikkuna.getTietolahde()  == 0) {
-	        	        				tia_haku="Add.Step";
-	        	        			}
 
 	        	        			if (muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)],tia_kerroin) > 1) { //onko lisäys päällä
 	    		        				//lisälämpö
@@ -1561,10 +1559,6 @@ public class LogintutkijaOhjain {
 	    	        			//korjaus 1.2.15: kaytto_kv tarvitaan koska kyseessä on käyttövesituotanto
 	    	        			kaytto_kv++;
 	    	        			kompr_kaynnissa=false;
-
-        	        			if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345") && ikkuna.getTietolahde()  == 0) {
-        	        				tia_haku="Add.Step";
-        	        			}
         	        			
         	        			if (muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)],tia_kerroin) > 1) { //onko lisäys päällä	
         	        				//lämmitetään suoralla sähköllä
@@ -1582,9 +1576,6 @@ public class LogintutkijaOhjain {
         	        			//0b00000100 = 2
         	        			//vastusaika, Relays PCA-Base on idx20, arvo 2 = lämmitetään suoralla sähköllä tai kiertopumppu pyörii
         	        			//sähkövoima löytyy idx 15, jakaja on div_add (ei toistaiseksi tulosteta)
-        	        			if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345") && ikkuna.getTietolahde()  == 0) {
-        	        				tia_haku="Add.Step";
-        	        			}
         	        			if (muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)],1) > 1) { //onko lisäys päällä	
             	        			//korjaus 1.2.15: kaytto_la tarvitaan koska kyseessä on lämmitysvesituotanto
             	        			kaytto_la++;
@@ -1643,8 +1634,6 @@ public class LogintutkijaOhjain {
 	    	        				ep15_prosessinalku=0;
 	    	        			}
 	    	        			//otetaan EP15 ja PCA prio ylös tallennusta varten
-	
-	                			//ikkuna.kirjoitaKonsolille(ep15_prio.get(ep15_prio.size()-1) + "\n");
 	                			if(tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP15 Prio",false)].equalsIgnoreCase("1")){
 	    	        				ep15_kaytto_la++;
 	    	        				ep15_cop_la.add(ep15_lastcop=laskeCOP(ep15_bt12.get(ep15_bt12.size()-1),ep15_bt3.get(ep15_bt3.size()-1),ep15_bt14.get(ep15_bt14.size()-1),ep15_bt17.get(ep15_bt17.size()-1),ep15_bt10.get(ep15_bt10.size()-1),cop_035, cop_045));
