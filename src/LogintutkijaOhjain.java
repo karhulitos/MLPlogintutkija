@@ -658,7 +658,7 @@ public class LogintutkijaOhjain {
 	            			}
             			}
             			
-            			// Mallitarvaukset datasta
+            			// Malliarvaukset datasta
             			//
             			//
             			//
@@ -681,6 +681,9 @@ public class LogintutkijaOhjain {
 	            					ikkuna.getTietolahde()  == 0) {
 	        					ikkuna.getLblMLPMalli().setText(nibecontroller + "-VILP");
 	        					kaynti_haku = "Kompressori (EB101)";
+	        				} else if (haeMapista(kentat,"BS1-ref",false) != -1 &&
+	            					ikkuna.getTietolahde()  == 0) {
+	        					ikkuna.getLblMLPMalli().setText(nibecontroller + "-PILP");
 	        				} else if (haeMapista(kentat,"EB100-EP15 Prio",false) != -1) {
 								//luultavasti F1345
 								ikkuna.getLblMLPMalli().setText(nibecontroller + "1345");
@@ -724,6 +727,7 @@ public class LogintutkijaOhjain {
 							}
 						}
 						
+						
 						//säädöt per malli
 						//
 						//
@@ -735,6 +739,15 @@ public class LogintutkijaOhjain {
 							} else {
 	        					keruu_sisaan_haku = "EP14-BT10"; //ulkoilma "keruu tulo" kannassa  BT28
 	        					keruu_ulos_haku = "EP14-BT11"; //lämmönvaihdin "keruu meno" kannassa BT16
+							}
+						}
+						if (ikkuna.getLblMLPMalli().getText().contains("PILP")) { //PILP
+							if (ikkuna.getTietolahde()  == 0) {
+        					keruu_sisaan_haku = "BT20"; //poisto
+        					keruu_ulos_haku = "BT21"; //jäte
+							} else {
+	        					keruu_sisaan_haku = "EP14-BT10"; //poistoilma "keruu tulo" kannassa  BT20
+	        					keruu_ulos_haku = "EP14-BT11"; //jäteilma kannassa BT21
 							}
 						}
 						if (nibecontroller.equalsIgnoreCase("S")) { //S-ohjain
@@ -894,8 +907,7 @@ public class LogintutkijaOhjain {
 	    	        			}
 	    	        			lokiRVersio=tiedostot.get(i)[j][haeMapista(kentat,"R-version",false)];
 	    	        		}
- 
-	    	        		
+ 	
 	            			//kirjoitetaan aloitusaika Käyrät-ikkunaan
 	            			if (aloitusaika != true) {
 	            				LogintutkijaGUI.setAikaAloitus(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()));
@@ -1263,14 +1275,14 @@ public class LogintutkijaOhjain {
 	            			
 	            			//FLM ilman lämpötilat
 	            			//bt20
-	            			if (haeMapista(kentat,"AZ1-BT20",false) != -1) {
-	            				bt20.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,"AZ1-BT20",false)],kerroin));
+	            			if (haeMapista(kentat,"BT20",false) != -1) {
+	            				bt20.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,"BT20",false)],kerroin));
 	            			} else {
 	            				bt20.add(0);
 	            			}
 	            			//bt21
-	            			if (haeMapista(kentat,"AZ1-BT21",false) != -1) {
-	            				bt21.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,"AZ1-BT21",false)],kerroin));
+	            			if (haeMapista(kentat,"BT21",false) != -1) {
+	            				bt21.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,"BT21",false)],kerroin));
 	            			} else {
 	            				bt21.add(0);
 	            			}
@@ -1350,7 +1362,7 @@ public class LogintutkijaOhjain {
 							 * { ikkuna.kirjoitaKonsolille("Prio EP15: " +
 							 * tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP15 Prio",false)] + "\n"); }
 							 */
-	            			
+
 	            			
 	            			// Käyttötilat
 	            			// Relays PCA Base, on binäärilukuna 0b00000000
@@ -1379,6 +1391,7 @@ public class LogintutkijaOhjain {
 		            				}
 	            				}
 	    	        			kaytto_la++;
+
 	    	        			//skipataan pari ensimmäistä arvoa koska prosessi ei ole stabiloitunut	
 	    	        			if(prosessinalku>=120){		
 	    	        				if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")
@@ -1412,15 +1425,14 @@ public class LogintutkijaOhjain {
 	    	        					}
 	    	        					//lampo_delta_la.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"BT2",bt2_strict)]) - Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,bt3_haku,false)]));
 	    	        				}
-
+	    	        				
 	    	        				lampo_delta_la.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt2_haku,bt2_strict)],kerroin) - muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt3_haku,bt3_strict)],kerroin));
 
 	    	        				//cop
 	    	        				cop_la.add(lastcop=laskeCOP(bt12.get(bt12.size()-1),bt3.get(bt3.size()-1),bt14.get(bt14.size()-1),bt17.get(bt17.size()-1),bt10.get(bt10.size()-1),cop_035, cop_045));
-	
+		            				
 	    	        				//delta keruu tulo idx8 (BT10) - tulo idx9 (BT11)
 		            				lampo_delta_keruu.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin) - muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_sisaan_haku,false)],kerroin));
-	            					
 
 		            				//etsitään matalin ja korkein bt10
 	            					//matalin
@@ -1460,6 +1472,7 @@ public class LogintutkijaOhjain {
 			    	        					kompr_kaynnistyksia--;
 			    	        				}
 			    	        			}
+
 		    	        			} // jos mennyt 120 sek
 	    	        		// Relays PCA-Base 15 tai 11
 	            			} else if ((relaysPCAbase.get(relaysPCAbase.size()-1) == 15 || relaysPCAbase.get(relaysPCAbase.size()-1) == 11)
@@ -1693,7 +1706,6 @@ public class LogintutkijaOhjain {
 	            			}
 	            			
 
-	            			
 	            			//COP laskenta EP15
 	            			//int bt12, int bt3, int bt14, int bt17, int bt10, int cop35, int cop45
 	            			if (ep15_kompr_kaynnissa) {
@@ -1756,7 +1768,6 @@ public class LogintutkijaOhjain {
 	                    	}
 	            			//ota tila ylös muutoksen huomioimiseksi
 	            			edellinentila = relaysPCAbase.get(relaysPCAbase.size()-1);
-	                    	
 	            		}//datarivi (ei header) loppu
             			//ikkuna.kirjoitaKonsolille("koepalaY: " + j + "\n");    
 	        			//ikkuna.kirjoitaKonsolille(tiedostot.get(i)[j][haeMapista(kentat,"Relays PCA-Base",false)] + "\n");
@@ -1769,7 +1780,7 @@ public class LogintutkijaOhjain {
             } //tiedoston loppu		
 
     		//VILP labelit
-    		if (ikkuna.getLblMLPMalli().getText().contains("VILP")) {
+    		if (ikkuna.getLblMLPMalli().getText().contains("VILP") || ikkuna.getLblMLPMalli().getText().contains("PILP")) {
     			ikkuna.getLblLammonKeruu().setText(" ∆ lämmönkeruuilma");
     		}
     		
@@ -1958,8 +1969,7 @@ public class LogintutkijaOhjain {
         	boolean aloitusaika=false;
         	
         	ikkuna.getLblLammonKeruu().setText(" ∆ lämmönkeruupiiri");
-        	
-        	
+       	
         	//kesäajan aiheuttaman käyrien taiteellisen piirron poisto
 			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     	

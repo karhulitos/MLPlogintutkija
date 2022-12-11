@@ -1715,7 +1715,7 @@ public class LogintutkijaGUI extends JPanel
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(27, false, true);
                	//Suorasähkö
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(28, false, true);
-               	//BF1 kylmäaine virtaus
+               	//BF1 virtaus
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(29, false, true);
                	//Kompressorin nopeus, pois jossei F1x55
                	(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(30, false, true);
@@ -1752,9 +1752,16 @@ public class LogintutkijaGUI extends JPanel
 		                }
 		                if (lblMLPMalli.getText().equalsIgnoreCase("F11/245")) {
 		                	if (i >= 15 && i <= 23) chkbox.setEnabled(false);
-		                } else {
+		                }  else {
 		                	if (i >= 15) chkbox.setEnabled(true);
 		                }
+		                
+		                if (lblMLPMalli.getText().contains("PILP")) {
+		                	if (i >= 39 && i <= 40) {
+		                		chkbox.setSelected(true);
+		                		(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(suure, true, true);
+		                		}
+		                	}
 
 		                //checkboksien kuuntelijat
 		                chkbox.addItemListener(new ItemListener() {
