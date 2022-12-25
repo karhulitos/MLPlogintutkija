@@ -1311,7 +1311,7 @@ public class LogintutkijaOhjain {
 	            			} else if ((nibecontroller.equals("S") &&
 	            					!ikkuna.getLblMLPMalli().getText().contains("VILP") &&
 	            					ikkuna.getTietolahde()  == 0)) { //S-ohjain
-	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("3")) {
+	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("3") || tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("11")) {
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30") ||
 	            							tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("40")) { //pca 7
 	            						relaysPCAbase.add(7);
