@@ -87,6 +87,9 @@ public class LogintutkijaOhjain {
 	private String ep14_gp2_haku = "GP2-speed EP14";
 	private String cs_haku = "Calc. Supply";
 	private String dm_haku = "Degree Minutes";
+	private String be1_haku = "BE1";
+	private String be2_haku = "BE2";
+	private String be3_haku = "BE3";
 	//käyriä varten
 	private ArrayList<Integer> bt2 = new ArrayList<Integer>();
 	//autoupdatea varten
@@ -171,22 +174,14 @@ public class LogintutkijaOhjain {
 	private double cop_045 = 0.0;
 	private static String bt67_label = "";
 	private boolean paikallinen_tietokanta_tallennus = true;
-	private int f1345_ep15_found =  0;
 	private boolean laske_kaynnistys_jos_kaynnissa=true;
 	private boolean cfa_fake = false;
 	private int F1345LisaysAskel = 0;
-	private int bt53_found =  0;
-	private int bt54_found =  0;
-	private int bt51_found =  0;
 	private int tietueen_pituus =  0;
 	private LogintutkijaMalli malli;
 	private LogintutkijaGUI ikkuna;
-	private int bt20_found =  0;
-	private int bt21_found =  0;
 	private static ArrayList<Integer> bt20 = new ArrayList<Integer>();
 	private static ArrayList<Integer> bt21 = new ArrayList<Integer>();
-	private int bt71_found =  0;
-	private int prio_found =  0;
 	private static ArrayList<Integer> bt71 = new ArrayList<Integer>();
 	private boolean hdd = false;
 	private String ctcmappi = "GSi12,0,68,1,7,10,11,14,16,17,18,19,22,50,51,53,55,56,57,58";
@@ -197,6 +192,10 @@ public class LogintutkijaOhjain {
 	private String cfa_haku = "compr. freq. act";
 	private String bt50_haku = "BT50";
 	private boolean iIsStopped = false;
+	//virtamuuntajat
+	private static ArrayList<Integer> be1 = new ArrayList<Integer>();
+	private static ArrayList<Integer> be2 = new ArrayList<Integer>();
+	private static ArrayList<Integer> be3 = new ArrayList<Integer>();
 	
 	public LogintutkijaOhjain(final LogintutkijaMalli malli, final LogintutkijaGUI ikkuna) {
 		this.malli = malli;
@@ -223,8 +222,7 @@ public class LogintutkijaOhjain {
             //alustetaan edistymisarvo.
             setProgress(0);
             //alustetaan logimuuttuja
-            ArrayList<ArrayList<String[]>> kaikkilogit = new ArrayList<ArrayList<String[]>>();
-            ArrayList<String[][]> kaikkilogit2 = new ArrayList<String[][]>();
+            ArrayList<String[][]> kaikkilogit = new ArrayList<String[][]>();
             //BT2 Zero pitää nollata ennen mitään uutta hakua
             bt2_nolla=true;
             cfa_fake=false;
@@ -254,7 +252,7 @@ public class LogintutkijaOhjain {
 	            		//luetaan kaikki tiedostot taulukkoon joka sisältää taulukon jossa yhden tiedoston rivit
 						//pitää testata mikä pumppu kyseessä
 						if (LogintutkijaGUI.getValittu_Tiedosto_Filtteri().equals("ctc")) {
-							kaikkilogit2.add(tabulaattoriJakaja2(logit.get(i),',',LogintutkijaGUI.getValittu_Tiedosto_Filtteri()));
+							kaikkilogit.add(tabulaattoriJakaja(logit.get(i),',',LogintutkijaGUI.getValittu_Tiedosto_Filtteri()));
 						} else if (LogintutkijaGUI.getValittu_Tiedosto_Filtteri().equals("nibes")) {
 							if (i==0) {
 								BufferedReader br = new BufferedReader(new FileReader(new File(logit.get(i))));
@@ -264,10 +262,10 @@ public class LogintutkijaOhjain {
 								}
 								br.close();
 							}
-							kaikkilogit2.add(tabulaattoriJakaja2(logit.get(i),separator,LogintutkijaGUI.getValittu_Tiedosto_Filtteri()));
+							kaikkilogit.add(tabulaattoriJakaja(logit.get(i),separator,LogintutkijaGUI.getValittu_Tiedosto_Filtteri()));
 						} else {
 							//ikkuna.kirjoitaKonsolille("Logit size: " + logit.size());
-							kaikkilogit2.add(tabulaattoriJakaja2(logit.get(i),'\t',LogintutkijaGUI.getValittu_Tiedosto_Filtteri()));
+							kaikkilogit.add(tabulaattoriJakaja(logit.get(i),'\t',LogintutkijaGUI.getValittu_Tiedosto_Filtteri()));
 						}
 						paikallinen_tietokanta_tallennus=true;
 					} catch (IOException e) {
@@ -284,13 +282,16 @@ public class LogintutkijaOhjain {
             	//metodi mallin puolelle
             	if (ikkuna.getTietokanta_dbms().equals("sqlite")) {
             		paikallinen_tietokanta_tallennus=false;
-            		String[][] sqllitedata = malli.haeSQLiteKannasta2(ikkuna.getTietokanta_pvm_mista(), ikkuna.getTietokanta_pvm_mihin());
+            		String[][] sqllitedata = malli.haeSQLiteKannasta(ikkuna.getTietokanta_pvm_mista(), ikkuna.getTietokanta_pvm_mihin());
             		if (sqllitedata !=  null) {
-            			kaikkilogit2.add(sqllitedata);
+            			kaikkilogit.add(sqllitedata);
             		}
             	} else {
-            		paikallinen_tietokanta_tallennus=false;
-            		kaikkilogit=malli.haeMySQLKannasta(ikkuna.getTietokanta_osoite(), ikkuna.getTietokanta_nimi(), ikkuna.getTietokanta_kayttaja(), ikkuna.getTietokanta_salasana(), ikkuna.getTietokanta_pvm_mista(), ikkuna.getTietokanta_pvm_mihin());
+            		paikallinen_tietokanta_tallennus=false;      		
+            		String[][] sqldata = malli.haeMySQLKannasta(ikkuna.getTietokanta_osoite(), ikkuna.getTietokanta_nimi(), ikkuna.getTietokanta_kayttaja(), ikkuna.getTietokanta_salasana(), ikkuna.getTietokanta_pvm_mista(), ikkuna.getTietokanta_pvm_mihin());
+            		if (sqldata !=  null) {
+            			kaikkilogit.add(sqldata);
+            		}
             	}
             }
 
@@ -304,18 +305,7 @@ public class LogintutkijaOhjain {
             	//tallennetaan SQLite kantaan myöhempää tarkastelua varten
             	malli.tallennaSQLiteKantaan();
             } else {
-                if(kaikkilogit2.size()>0){
-                	ikkuna.kirjoitaKonsolille("Logiaineisto luettu.\n");
-                	//analysoidaan
-    	            ikkuna.kirjoitaKonsolille(analysoi2(kaikkilogit2));
-    	            ikkuna.getRadioNappulaEP14().setSelected(true);
-    	            ikkuna.getRadioNappulaEP15().setSelected(false);
-    	            ikkuna.getLuoKayrat().setEnabled(true);
-                	//tallennetaan SQLite kantaan myöhempää tarkastelua varten
-                	malli.tallennaSQLiteKantaan();
-                } else {
-            		ikkuna.nollaaNumerot();
-                }
+        		ikkuna.nollaaNumerot();
             }
             return null; //Tausta-ajo (doInBackground) päättyy
         }
@@ -335,10 +325,10 @@ public class LogintutkijaOhjain {
         	running=false;
         }
         
-        // analysoi2
+        // analysoi
     	// Analysoi logirivit tietolähteestä
         //
-        String analysoi2(ArrayList<String[][]> tiedostot) {
+        String analysoi(ArrayList<String[][]> tiedostot) {
         	if (tiedostot == null){
         		kv = 0;
         		sa = 0;
@@ -430,25 +420,17 @@ public class LogintutkijaOhjain {
         	ep15_bt11_max = -500;
         	f1255_cfa_found=0;
         	ikkuna.getLblMLPMalli().setText("MLP");
-        	f1345_ep15_found =  0;
         	gp1.clear();
         	gp2.clear();
         	ep15_gp1.clear();
         	ep15_gp2.clear();
-        	bt53_found =  0;
-        	bt54_found =  0;
-        	bt51_found =  0;
         	bt51.clear();
         	bt53.clear();
         	bt54.clear();
-        	prio_found =  0;
         	prio.clear();
         	tietueen_pituus =  0;
-        	bt21_found =  0;
         	bt21.clear();
-        	bt20_found =  0;
         	bt20.clear();
-        	bt71_found =  0;
         	bt71.clear();
         	bt28.clear();
         	eb101_bt3.clear();
@@ -487,6 +469,10 @@ public class LogintutkijaOhjain {
         	bf1_haku = "EP14-BF1";
         	cfa_haku = "compr. freq. act";
         	bt50_haku = "BT50";
+        	//virtamuuntajat
+        	be1.clear();
+        	be2.clear();
+        	be3.clear();
         	
         	boolean kompr_kaynnissa = false;
         	boolean ep15_kompr_kaynnissa = false;
@@ -547,7 +533,7 @@ public class LogintutkijaOhjain {
             		if(tiedostot.get(i)[1][1].equalsIgnoreCase("CTC")) {
             			ikkuna.getLblMLPMalli().setText("CTC");
             		} else {
-                			ikkuna.getLblMLPMalli().setText(nibecontroller + "1x45");	
+                		ikkuna.getLblMLPMalli().setText(nibecontroller + "1x45");	
             		}
  
     				//kenttien hashmappi
@@ -555,7 +541,8 @@ public class LogintutkijaOhjain {
 					//alkutarkistukset sarakeotsikoista
     				//nibe F vs S tarkistus
     				int headeroffset = 1;
-    				if (nibecontroller.equals("S") || LogintutkijaGUI.getValittu_Tiedosto_Filtteri().equals("ctc")) {
+    				if (nibecontroller.equals("S") || LogintutkijaGUI.getValittu_Tiedosto_Filtteri().equals("ctc")
+    					) {
     					headeroffset = 0;
     				}
         			for (int k=0; k<tiedostot.get(i)[headeroffset].length;k++) {
@@ -563,13 +550,7 @@ public class LogintutkijaOhjain {
         				//ikkuna.kirjoitaKonsolille("Kenttä " + k + ": " + tiedostot.get(i)[headeroffset][k] + "\n");
         			}
 	        			
-//        	        for (String variableName : kentat.keySet())
-//        	        {
-//        	            String variableKey = variableName;
-//        	            int variableValue = kentat.get(variableName);
-//            			ikkuna.kirjoitaKonsolille("Name: " + variableKey + "\n");
-//            			ikkuna.kirjoitaKonsolille("Number: " + variableValue + "\n");
-//        	        }
+
 
             		//F1145 login esimerkki
             		//Divisors		1	10	10	10	10	10	10	10	10	10	10	10	10	100	1	10	10	10	1
@@ -581,7 +562,19 @@ public class LogintutkijaOhjain {
         			rivi:
             		for (int j=0; j<tiedostot.get(i).length;j++) {
                 		//tarkistetaan muistinkäyttö
-
+        
+            			
+            			
+            			//DEBUGGG
+//            	        for (String variableName : kentat.keySet())
+//            	        {
+//            	            String variableKey = variableName;
+//            	            int variableValue = kentat.get(variableName);
+//                			//ikkuna.kirjoitaKonsolille(variableKey + "(" + variableValue + ");");
+//                			ikkuna.kirjoitaKonsolille(tiedostot.get(i)[j][haeMapista(kentat,variableKey,false)] + ";");
+//            	        }
+//            	        ikkuna.kirjoitaKonsolille("\n");
+            			
                 		//tarkasta muistinkäyttö joka 10,000 rivin jälkeen
             			if (kaikkirivit % 10000 == 0 && kaikkirivit != 0) {
                     		long free  = getFreeMemory(); 
@@ -784,7 +777,11 @@ public class LogintutkijaOhjain {
 	        					keruu_ulos_haku = "EP14-BT11"; //lämmönvaihdin "keruu meno" kannassa BT16
 							}
 						}
-						
+						//MySQL
+						if (ikkuna.getTietolahde()  == 1 && ikkuna.getTietokanta_dbms().equals("mysql")) {
+	    					tia_haku = "Tot.Int.Add";
+	    					kaynti_haku = "EB100-EP14-PCA";
+						}
 						//CTC
 						if (ikkuna.getLblMLPMalli().getText().contains("CTC")) { //CTC
 							if (ikkuna.getTietolahde()  == 0) {
@@ -793,6 +790,8 @@ public class LogintutkijaOhjain {
 								tia_kerroin = 100; 
 							}
 						}
+						
+
 						
         				//datarivi
             			if ( (!tiedostot.get(i)[j][0].equalsIgnoreCase("Divisors") &&
@@ -825,7 +824,7 @@ public class LogintutkijaOhjain {
 		            			aika[2] = "0";
 
             				} else {
-              				
+
 	            				//muutetaan teksti date ja time
 		            			//pvm
 		            			paivays = tiedostot.get(i)[j][haeMapista(kentat,"Date",false)].split("[-]");
@@ -839,7 +838,7 @@ public class LogintutkijaOhjain {
 	            			tunti = Integer.parseInt(aika[0]);
 	            			minuutti = (Integer.parseInt(aika[1]));
 	            			sekunti = Integer.parseInt(aika[2]);
-
+	            			
 	            			kokaika++;
 
 	            			if (edellinen_logiaika.equals(new GregorianCalendar(vuosi, kuukausi, paiva, tunti, minuutti, sekunti))) {
@@ -913,7 +912,7 @@ public class LogintutkijaOhjain {
 	            				LogintutkijaGUI.setAikaAloitus(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()));
 	            				aloitusaika=true;
 	            			}
-	            			
+
 	    	        		//bt1
 	            			if (haeMapista(kentat,bt1_haku,bt1_strict) != -1) { //mittauspisteen numero on tarkin
 	            				//bt1.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,bt1_haku,bt1_strict)]));
@@ -1144,7 +1143,24 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				prio.add(0);
 	            			}
-
+	            			
+	            			//virtamuuntajat
+	            			if (haeMapista(kentat,be1_haku,false) != -1) {
+	            				be1.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,be1_haku,false)],1));
+	            			} else {
+	            				be1.add(0);
+	            			}
+	            			if (haeMapista(kentat,be2_haku,false) != -1) {
+	            				be2.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,be2_haku,false)],1));
+	            			} else {
+	            				be2.add(0);
+	            			}
+	            			if (haeMapista(kentat,be3_haku,false) != -1) {
+	            				be3.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,be3_haku,false)],1));
+	            			} else {
+	            				be3.add(0);
+	            			}
+           			
 	            			//
 	            			//
 	            			//
@@ -1165,6 +1181,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				ep15_gp2.add(0);
 	            			}
+         			
 	            			//EP15 BT3
 	            			if (haeMapista(kentat,"EP15-BT3",false) != -1) {
 	            				ep15_bt3.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT3",false)]));
@@ -1208,7 +1225,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				ep15_bt17.add(0);
 	            			}
-	
+
 	            			//F1345 sähkö lisäys
 	            			if (F1345LisaysAskel == 0 && ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
 	            				if (ikkuna.getTietolahde()  == 0) {
@@ -1230,7 +1247,6 @@ public class LogintutkijaOhjain {
 	             				}
 	            			}
 	            			//EP15 END
-
 	            			
 	            			//Calc. Supply
 	            			if (haeMapista(kentat,cs_haku,false) != -1) {
@@ -1238,7 +1254,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				cs.add(0);
 	            			}
-	            			
+           			
 	            			//Degree Minutes
 	            			if (haeMapista(kentat,dm_haku,false) != -1) {
 	            				dm.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,dm_haku,false)],kerroin));
@@ -1253,6 +1269,7 @@ public class LogintutkijaOhjain {
 	            				bf1.add(0);
 	            			}
 	            			
+
 	            			//compressor frequency active
 	            			if (haeMapista(kentat,cfa_haku,false) != -1 && cfa_fake==false){
 	            				cfa.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cfa_haku,false)],kerroin));
@@ -1272,7 +1289,7 @@ public class LogintutkijaOhjain {
 	            					cfa.add(0);
 	            				}
 	            			}
-	            			
+
 	            			//FLM ilman lämpötilat
 	            			//bt20
 	            			if (haeMapista(kentat,"BT20",false) != -1) {
@@ -1286,11 +1303,11 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				bt21.add(0);
 	            			}
-            			
+
 	            			//Relays PCA-Base
 	            			//VILPissä PCA ei kerro tilaa, ainakaan luotettavasti, kannasta luettuna PCA jo kunnossa
 	            			//S-VILP
-	            			if (ikkuna.getLblMLPMalli().getText().contains("VILP") && ikkuna.getTietolahde()  == 0) {
+	            			if (ikkuna.getLblMLPMalli().getText().contains("VILP") && ikkuna.getTietolahde() == 0) {
 	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("1")) {
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30")) { //pca 7
 	            						relaysPCAbase.add(7);
@@ -1344,8 +1361,9 @@ public class LogintutkijaOhjain {
             					}
             				} else {
 	            				relaysPCAbase.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)]));
+    	            			//ikkuna.kirjoitaKonsolille("BEBUG1: " + kaynti_haku + " " + haeMapista(kentat,kaynti_haku,false) + " " +  tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)] + "\n");
 	            			}
-	            			
+
 	            			//ikkuna.kirjoitaKonsolille(j + ": pca(" + relaysPCAbase.size()  + "): " + relaysPCAbase.get(relaysPCAbase.size()-1) + " ed: " + edellinentila + "\n");
 	            			//jos pca muuttuu, resetoi
 	            			if(relaysPCAbase.get(relaysPCAbase.size()-1) != edellinentila){
@@ -1384,7 +1402,7 @@ public class LogintutkijaOhjain {
 	            				//käyntiaika, Relays PCA-Base on idx 20, arvo 7 = lämmitys
 	            				//jos prio 40, lämmitetään uima-allasta
 	            				//uima-allaskin on lämmitystä, mutta erotellaan se käyntiaikasuhteessa
-
+            				
 	            				if (haeMapista(kentat,"Prio",false) != -1) {
 		            				if (Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)]) == 40) {
 		            					kaytto_ua++;
@@ -1519,12 +1537,16 @@ public class LogintutkijaOhjain {
 //		                			ikkuna.kirjoitaKonsolille("bt3 haku: " + bt3_haku + " " + bt3_strict + " " + tia_haku + " \n");  
 		                			
 	    	        				lampo_delta_kv.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt2_haku,bt2_strict)],kerroin) - muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt3_haku,bt3_strict)],kerroin));
-
+ 	        				
 	    	        				//cop käyttövesi
 	    	        				cop_kv.add(lastcop=laskeCOP(bt12.get(bt12.size()-1),bt3.get(bt3.size()-1),bt14.get(bt14.size()-1),bt17.get(bt17.size()-1),bt10.get(bt10.size()-1),cop_035, cop_045));
+	    	        				
+	    	        				
 	    	        				//delta keruu tulo idx8 (BT10) - tulo idx9 (BT11), ei jaeta niin ei tarvita doublea
 		            				//lampo_delta_keruu.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)]) - Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_sisaan_haku,false)]));
 		            				lampo_delta_keruu.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin) - muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_sisaan_haku,false)],kerroin));
+		            				
+	   
 		            				
 	            					//etsitään matalin ja korkein bt10
 	            					//matalin
@@ -1545,6 +1567,8 @@ public class LogintutkijaOhjain {
 	            						bt11_max = muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,keruu_ulos_haku,false)],kerroin);
 	            					}
 
+
+	            					
 	        	        			if (muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,tia_haku,false)],tia_kerroin) > 1) { //onko lisäys päällä
 	    		        				//lisälämpö
 	    	        					if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345") &&
@@ -1834,994 +1858,7 @@ public class LogintutkijaOhjain {
             }); //itemlistener loppu
 	    	return mlpfound + " " + logiaika.size() + " tietueella. Login alku: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()) + ", loppu: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(logiaika.size()-1).getTime()) + ".\n";
     	} //analysoi2 loppu
-        
-        // analysoi
-        // vanha analysoi
-        //
-        String analysoi(ArrayList<ArrayList<String[]>> tiedostot) {
-        	if (tiedostot == null){
-        		kv = 0;
-        		sa = 0;
-        		la = 0;
-        		ua = 0;
-        		la_flm = 0;
-        		kv_flm = 0;
-        		le = 100;
-        		return "Ei yhtään tietuetta analysoitavaksi.\n";
-        	}
-        	GregorianCalendar edellinenriviaika = new GregorianCalendar();
-        	edellinenriviaika.setTimeInMillis(0);
-        	//divisoreja ei sitten käytettykään, pidetään jemmassa tulevaisuutta varten 
-        	//int div_bt1, div_bt2, div_bt3, div_bt6, div_bt7, div_bt10, div_bt11, div_bt12, div_bt14, div_bt17, div_bt25, div_bt50, div_add, div_supply, div_degmin, div_bt1, div_avg = 1;
-        	//kaytto
-        	//nollataan taulukkoja jos analysoidaan uudelleen
-        	logiaika.clear();
-        	kayra_taulukko.clear();
-        	kayra_taulukko_nimet.clear();
-        	mittausvali_ms = 0;
-        	kokaika = 0;
-        	vuosi = kuukausi = paiva = tunti = minuutti = sekunti = 0;
-        	kaytto_kv = 0;
-        	kaytto_la = 0;
-        	kaytto_le = 0;
-        	kaytto_ua = 0;
-        	kaytto_kv_flm = 0;
-        	kaytto_la_flm = 0;
-        	ep15_kaytto_kv = 0;
-        	ep15_kaytto_la = 0;
-        	ep15_kaytto_le = 0;
-        	cs.clear();
-        	dm.clear();
-        	bt1.clear();
-        	bt2.clear();
-        	bt3.clear();
-        	bt10.clear();
-        	bt11.clear();
-        	bt12.clear();
-        	bt14.clear();
-        	bt17.clear();
-        	bf1.clear();
-        	relaysPCAbase.clear();
-        	ep15_bt3.clear();
-        	ep15_bt10.clear();
-        	ep15_bt11.clear();
-        	ep15_bt12.clear();
-        	ep15_bt14.clear();
-        	ep15_bt17.clear();
-        	ep15_prio.clear();
-        	bt25.clear();
-        	bt50.clear();
-        	kompr_kaynnistyksia = 0;
-        	ep15_kompr_kaynnistyksia = 0;
-        	bt67_label = "";
-        	kw_sahko.clear();
-        	add_step.clear();
-        	kv_sahko.clear();
-        	lamm_sahko.clear();
-        	lampo_kv.clear();
-        	bt6.clear();
-        	lampo_delta_la.clear();
-        	lampo_delta_kv.clear();
-        	lampo_delta_keruu.clear();
-        	ep15_lampo_delta_la.clear();
-        	ep15_lampo_delta_kv.clear();
-        	ep15_lampo_delta_keruu.clear();
-        	cfa.clear();
-        	bt1.clear();
-        	teho.clear();
-        	cop.clear();
-        	cop_la.clear();
-        	cop_kv.clear();
-        	ep15_cop.clear();
-        	ep15_cop_la.clear();
-        	ep15_cop_kv.clear();
-        	lokiVersio = "0000";
-        	//maaviinan alin ja ylin reset
-        	bt10_min = 500;
-        	bt10_max = -500;
-        	bt11_min = 500;
-        	bt11_max = -500;
-        	ep15_bt10_min = 500;
-        	ep15_bt10_max = -500;
-        	ep15_bt11_min = 500;
-        	ep15_bt11_max = -500;
-        	f1255_cfa_found=0;
-        	ikkuna.getLblMLPMalli().setText("MLP");
-        	f1345_ep15_found =  0;
-        	gp1.clear();
-        	gp2.clear();
-        	ep15_gp1.clear();
-        	ep15_gp2.clear();
-        	bt53_found =  0;
-        	bt54_found =  0;
-        	bt51_found =  0;
-        	bt51.clear();
-        	bt53.clear();
-        	bt54.clear();
-        	prio_found =  0;
-        	prio.clear();
-        	tietueen_pituus =  0;
-        	bt21_found =  0;
-        	bt21.clear();
-        	bt20_found =  0;
-        	bt20.clear();
-        	bt71_found =  0;
-        	bt71.clear();
-        	
-        	boolean kompr_kaynnissa = false;
-        	boolean ep15_kompr_kaynnissa = false;
-        	int prosessinalku = 0;
-        	int ep15_prosessinalku = 0;
-        	int bt25_found =  0;
-        	int bt50_found =  0;
-        	int bt7_found =  0;
-        	int bt6_found =  0;
-        	int f1345_bp_found =  0;
-        	int f1255_bf1_found =  0;
-        	int f1345_ep15pca_found =  0;
-        	//6629 Release versio
-        	int rversion_found = 0;
-        	int gp_found = 0;
-        	int f1345_gp1_found = 0;
-        	int f1345_gp2_found = 0;
-        	int f1345_gp_fix = 0;
-        	bt2_found = 0;
-        	boolean aloitusaika=false;
-        	
-        	ikkuna.getLblLammonKeruu().setText(" ∆ lämmönkeruupiiri");
-       	
-        	//kesäajan aiheuttaman käyrien taiteellisen piirron poisto
-			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    	
-    		String edellinentila = "0";
-    		String ep15_edellinentila = "0";
-        	String mlpfound="Tietolähteestä ei löytynyt tuettujen pumppujen dataa.\n";
-    		//lasketaan login arvoista avainarvoja
-        	//yksi tiedosto = i
-        	//exit:
-    		for (int i=0;i<tiedostot.size();i++){
-    			//tarkistetaan koko
-    			if (tiedostot.get(0).size() < 4) {
-    				ikkuna.kirjoitaKonsolille("Liian lyhyt logi (" + tiedostot.get(0).size() + ") - anna pitempi hakuaika.\n");
-    				break;
-    			}
-			
-    			//jos ensimmäisen rivin eka solu on "Divisors" niin puhutaan Nibe-lämpöpumpun logista
-            	if(tiedostot.get(i).get(0)[0].equalsIgnoreCase("Divisors")){
-            		mlpfound="Analysointi tehty";
-            		
-            		//CTC hämä
-            		if(tiedostot.get(i).get(1)[1].equalsIgnoreCase("CTC")) {
-            			ikkuna.getLblMLPMalli().setText("CTC");
-            		} else {
-                			ikkuna.getLblMLPMalli().setText("F1x45");	
-            		}
-            		            		
-            		//ikkuna.kirjoitaKonsolille("tiedosto " + (i+1) + "\n");
-            		//F1145 login esimerkki
-            		//Divisors		1	10	10	10	10	10	10	10	10	10	10	10	10	100	1	10	10	10	1
-            		//Date	Time	version	BT1	BT2	BT3	BT6	BT7	BT10	BT11	BT12	BT14	BT17	BT25	BT50	Tot.Int.Add	Alarm number	Calc. Supply	Degree Minutes	BT1 Average	Relays PCA-Base
-            		//0		1		2		3	4	5	6	7	8		9		10		11		12		13		14		15			16				17				18				19			20
-            		//div			1	10	10	10	10	10	10		10		10		10		10		10		10		100			1				10				10				10			1
-            		//label	time	v	BT1	BT2	BT3	BT6	BT7	BT10	BT11	BT12	BT14	BT17	BT25	BT50	Tot.Int.Add	Alarm number	Calc. Supply	Degree Minutes	BT1 Average	Relays PCA-Base
-            		//rivi tiedostossa = j+1
-            		rivi:
-            		for (int j=0; j<tiedostot.get(i).size();j++) {
 
-            			//debug printtaus kaikki mitä sisään tulee
-//            			for (int o = 0;tiedostot.get(i).get(j).length>o;o++) {
-//            				ikkuna.kirjoitaKonsolille("idx_" + o + ": " + tiedostot.get(i).get(j)[o] + " ");
-//            			}
-//            			ikkuna.kirjoitaKonsolille("\n");
-            			
-            			
-						//tarkistetaan tietueen pituus
-						if (tietueen_pituus == 0) { // 1. logi, sen elemettien määrä muistiin
-							tietueen_pituus=tiedostot.get(i).get(j).length;
-							//ikkuna.kirjoitaKonsolille("koko " + (j+1) + ": " + tiedostot.get(i).get(j).length + "\n");
-							//ikkuna.kirjoitaKonsolille("rivi " + (j+2) + ": " + Arrays.asList(tiedostot.get(i).get(j+1)) + "\n");
-							//ikkuna.kirjoitaKonsolille("rivi " + (j+3) + ": " + Arrays.asList(tiedostot.get(i).get(j+2)) + "\n");
-						} else {
-							if (tietueen_pituus != tiedostot.get(i).get(j).length) {
-			    				ikkuna.kirjoitaKonsolille("Eri määrä elementtejä tietueessa " + j + ": alunperin " + tietueen_pituus + ", nyt " + tiedostot.get(i).get(j).length + " - ohitetaan tiedosto\n");
-			    				break;
-							}
-						}
-
-            			//etsitään tyhjä rivi
-            			if (tiedostot.get(i).get(j)[0].equals("")) {
-            				ikkuna.kirjoitaKonsolille("Tyhjä rivi " + (j+1) + " tiedostossa " + (i+1) + " - ei huomioida.\n");
-            				continue rivi;
-            			}
-            			
-            			if (tiedostot.get(i).get(0).length > tiedostot.get(i).get(j).length || Arrays.asList(tiedostot.get(i).get(j)).contains(null)){
-            				if (ikkuna.getTietolahde() == 1) {
-            					ikkuna.kirjoitaKonsolille("Vajaa tietue (" + (j+1) + ") - ei huomioida.\n");
-            				} else {
-            					ikkuna.kirjoitaKonsolille("Vajaa rivi (" + (j+1) + ") - ei huomioida. (Otithan USB tikun ulos hallitusti?)\n");
-            				}
-        	        		kv = 0;
-        	        		sa = 0;
-        	        		la = 0;
-        	        		le = 100;
-        	        		ikkuna.nollaaNumerot();
-            				continue rivi;
-            			}
-            			//etsitään validit merkit (F1145 tulosti ei-merkin)
-            			for (int a = 0; a < tiedostot.get(i).get(j).length; ++a) {
-            				//ikkuna.kirjoitaKonsolille("cpc=" + tiedostot.get(i).get(j)[a].codePointCount(0,tiedostot.get(i).get(j)[a].length()) + "\n");
-                			//System.out.println( "cpc=" + x.codePointCount(0,x.length()) );
-                			//for( int b = 0; b < tiedostot.get(i).get(j)[a].length(); ++b ){
-                				//ikkuna.kirjoitaKonsolille("char: " + tiedostot.get(i).get(j)[a].charAt(b) + "\n");
-                				//if (onkoAsciiMerkki(tiedostot.get(i).get(j)[a].charAt(b)) == false || j == 134) {
-                				if (j>1 && !tiedostot.get(i).get(j)[a].matches("^[a-zA-Z0-9,.;:()°˚/\\-_'\\s]+$") && !tiedostot.get(i).get(j)[a].isEmpty()) {
-                					ikkuna.kirjoitaKonsolille( "Korruptoitunut merkkijono \"" + tiedostot.get(i).get(j)[a] + "\" " + (i+1) + ". tiedostossa, rivillä " + (j+1) + " - tietuetta ei huomioida.\n" );
-                					continue rivi;
-                				}
-                    			//tarkistetaan validit arvot (-32768 on piuha irti anturista)
-                				if (tiedostot.get(i).get(j)[a].equals("-32768")) {
-                					ikkuna.kirjoitaKonsolille( "Laiton arvo \"" + tiedostot.get(i).get(j)[a] + "\" " + (i+1) + ". tiedostossa, rivillä " + (j+1) + " kentässä " + (a+1) + "  - tietuetta ei huomioida. Onko anturin piuha irti?\n" );
-                					continue rivi;
-                				}  
-                			//}
-            			}
-
-            			if (tiedostot.get(i).get(j)[0].equalsIgnoreCase("Divisors") ||
-            					tiedostot.get(i).get(j)[0].equalsIgnoreCase("Date")){
-            					//etsitään bt25 ja/tai bt50 tai jotain muuta
-  
-            					for (int k=0; k<tiedostot.get(i).get(j).length;k++){
-            						//ikkuna.kirjoitaKonsolille(k + ": " + tiedostot.get(i).get(j)[k] + "\n");
-            						if (tiedostot.get(i).get(j)[k].contains("BT25")) {
-            							bt25_found=1;
-            						} else if (tiedostot.get(i).get(j)[k].equals("BT2") || tiedostot.get(i).get(j)[k].equals("BT2(40008)")) {//BT2x eivät toimi muuten
-            							bt2_found=1;
-            							//ikkuna.kirjoitaKonsolille("BT2 found!!");
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("BT50")) {
-            							bt50_found=1;
-            							//ikkuna.kirjoitaKonsolille("BT50 found!!");
-    	        					}  else if (tiedostot.get(i).get(j)[k].equals("BT7") || tiedostot.get(i).get(j)[k].equals("BT7(40013)")) {//BT7x eivät toimi muuten
-            							bt7_found=1;
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("BT6")) {
-            							bt6_found=1;
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("R-version")) {
-            							rversion_found=1;
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("BF1 EP14") || tiedostot.get(i).get(j)[k].contains("EP14-BF1")) {
-    	        						//luultavasti F1x55
-    	        						f1255_bf1_found = 1;
-    	        						ikkuna.getLblMLPMalli().setText("F1x55");
-    	        						//ikkuna.kirjoitaKonsolille("BF1 found!!");
-    	        					//F1255 uusi firmis
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("compr. freq. act.")) {
-    	        						if (!cfa_fake) {
-    	        							ikkuna.getLblMLPMalli().setText("F1x55");
-    	        						}
-    	        						f1255_cfa_found = 1;
-            						} else if (tiedostot.get(i).get(j)[k].contains("EB100-EP15 Prio")) {
-    									//luultavasti F1345
-        								f1345_ep15_found=6;
-    									f1345_bp_found=2;
-    									ikkuna.getLblMLPMalli().setText("F1345");
-    									//ikkuna.kirjoitaKonsolille("EP15 Prio found!!");
-            						} else if (tiedostot.get(i).get(j)[k].contains("Relays PCA-Base EP15")) {
-        								f1345_ep15pca_found=1;
-        							} else if (tiedostot.get(i).get(j)[k].contains("GP1-speed EP14")) {
-            							gp_found=2;
-            							//ikkuna.kirjoitaKonsolille("EP14GP1 found!!");
-            						//f1345 GP 7774R2
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("GP1-speed EP15")) {
-            							f1345_gp1_found=1;
-            							//ikkuna.kirjoitaKonsolille("EP15GP1 found!!");
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("GP2-speed EP15")) {
-            							f1345_gp2_found=1;
-	        							//ikkuna.kirjoitaKonsolille("EP15GP2 found!!");
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("BT53")) { //aurinkokeräin
-            							bt53_found=1;
-	        							//ikkuna.kirjoitaKonsolille("BT53 found!!");
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("BT54")) { //aurinkokierukka
-            							bt54_found=1;
-	        							//ikkuna.kirjoitaKonsolille("BT54 found!!");
-		        					} else if (tiedostot.get(i).get(j)[k].contains("BT51")) { //uima-allas
-	        							bt51_found=1;
-	        							//ikkuna.kirjoitaKonsolille("BT51 found!!");
-		        					} else if (tiedostot.get(i).get(j)[k].contains("BT20")) { //FLM jäte
-	        							bt20_found=1;
-	        							//ikkuna.kirjoitaKonsolille("BT20 found!!");
-		        					} else if (tiedostot.get(i).get(j)[k].contains("BT21")) { //FLM poisto
-	        							bt21_found=1;
-	        							//ikkuna.kirjoitaKonsolille("BT21 found!!");
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("BT71")) { //paluu ulkoinen
-	        							bt71_found=1;
-	        							//ikkuna.kirjoitaKonsolille("BT71 found!!");
-    	        					} else if (tiedostot.get(i).get(j)[k].contains("Prio")) { //prio tuli firmiksessä 5539
-    	        						prio_found=1;
-    	        						//ikkuna.kirjoitaKonsolille("Prio found!!");
-    	        					}
-	        					}
-            					//1768 tarkistus
-            					int version = 0;
-            					if (tiedostot.get(i).get(j)[0].equalsIgnoreCase("Date")) {
-            						version = Integer. parseInt(tiedostot.get(i).get(j+1)[2]);
-                					if (version < 3105 && ikkuna.getTietolahde() == 0) {
-                						//lopetetaan kun versio 1768 löytyi
-                    					ikkuna.kirjoitaKonsolille(version + " -versio löydetty. Logintutkija tukee vain 3105 ja tuoreempia logeja. Toimii tai ei toimi.\n");
-                    					//break exit;
-                					}
-            					}
-            				continue rivi;
-            			}
-     			
-            			//datarivi. Jos paikallinen kanta, luetaan malli
-						if (ikkuna.getTietolahde()  == 1 && ikkuna.getTietokanta_dbms().equals("sqlite")) { //sqlite
-							//ikkuna.kirjoitaKonsolille(tiedostot.get(i).get(j)[tiedostot.get(i).get(j).length - 1]);
-							//pikakorjaus F1345 EP 15 GP2 osumattomuuteen
-							f1345_gp_fix = 2;
-							if (tiedostot.get(i).get(j)[tiedostot.get(i).get(j).length - 1].contains("F1345")) {
-    							ikkuna.getLblMLPMalli().setText("F1345");
-							} else if (tiedostot.get(i).get(j)[tiedostot.get(i).get(j).length - 1].contains("F1x55")) {
-								ikkuna.getLblMLPMalli().setText("F1x55");
-							} else if (tiedostot.get(i).get(j)[tiedostot.get(i).get(j).length - 1].contains("F11/245")) {
-								ikkuna.getLblMLPMalli().setText("F1x45");
-							} else {
-								ikkuna.getLblMLPMalli().setText("MLP");
-							}
-						}
-
- 
-						
-            			//muutetaan teksti date ja time, pvm idx0 ja aika idx1
-            			//pvm
-            			String [] paivays = tiedostot.get(i).get(j)[0].split("[-]");
-            			paiva = Integer.parseInt(paivays[2]);
-            			kuukausi = (Integer.parseInt(paivays[1])-1);
-            			vuosi = Integer.parseInt(paivays[0]);
-            			//kello
-            			paivays = tiedostot.get(i).get(j)[1].split("[:]");
-            			tunti = Integer.parseInt(paivays[0]);
-            			minuutti = (Integer.parseInt(paivays[1]));
-            			sekunti = Integer.parseInt(paivays[2]);
-        			
-    	        		//otetaan versio ylös
-    	        		if (lokiVersio.equalsIgnoreCase("0000")) { 
-    	        			ikkuna.getLblLokiVersio().setText("v" + tiedostot.get(i).get(j)[2]);
-    	        			lokiVersio=tiedostot.get(i).get(j)[2];
-    	        		}
-    	        		if (!lokiVersio.equalsIgnoreCase(tiedostot.get(i).get(j)[2]) && ikkuna.getTietolahde()  == 0) {
-    	        			if (!lokiVersio.equalsIgnoreCase("9999")) {
-    	        				ikkuna.kirjoitaKonsolille("Edellisen login versio " + lokiVersio + " ei vastaa nykyistä (" + tiedostot.get(i).get(j)[2] + ") tiedostossa " + (i+1) + "\n");
-    	        				ikkuna.kirjoitaKonsolille("Nykyistä ja seuraavia logitiedostoja ei käsitellä. Pidä hakemistossa vain saman versiotason logeja.\n");
-    	        				lokiVersio="9999";
-    	        			}
-    	        			continue rivi;
-    	        		}
-    	        		if (rversion_found == 1){
-    	        			ikkuna.getLblLokiVersio().setText("v" + tiedostot.get(i).get(j)[2] + "R" + tiedostot.get(i).get(j)[3]);
-    	        			lokiRVersio=tiedostot.get(i).get(j)[3];
-    	        		}
-            			kokaika++;
-            			logiaika.add(new GregorianCalendar(vuosi, kuukausi, paiva, tunti, minuutti, sekunti));
-            			//kirjoitetaan aloitusaika Käyrät-ikkunaan
-            			if (aloitusaika != true) {
-            				LogintutkijaGUI.setAikaAloitus(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()));
-            				aloitusaika=true;
-            			}
-//						  for (int y=0; y<tiedostot.get(i).get(j).length ;y++) {
-//							  ikkuna.kirjoitaKonsolille("idx " + y + ": " + tiedostot.get(i).get(j)[y] + ", ");
-//						  }
-//						  ikkuna.kirjoitaKonsolille("\n");
-  
-            			//KÄYTTÖTILAT
-            			//Relays PCA Base, on binäärilukuna 0b00000000
-            			//bitti 0 = kompressorin tila, 0=pois, 1=päällä
-            			//bitti 1 = lämpöjohtopumpun tila, 0=pois, 1=päällä
-            			//bitti 2 = keruupumpun tila, 0=pois, 1=päällä
-            			//bitti 3 = vaihtoventtiilin ohjaus, 0 = venttiili auki ja tehdään lämmitysvettä, 1 = venttiili kiinni ja tehdään käyttövettä
-            			//jos nykyinen tila ja edellinen tila ovat eri, resetoidaan prosessin alku
-    	        		//F1345 Prio arvo kertoo käyttötilan EP15 kompressorille, EP14 saa Relays PCA Basen arvon
-            			//1 tarkoittaa lämmitystä ja 2 käyttövettä, nolla näyttäisi olevan kun kompura ei käy.
-
-            			//Käyttövesivaraaja idx 6, ei jaeta niin ei tarvita doublea
-            			if (bt7_found > 0) {
-            				bt67_label = "ylävaraaja";
-            				lampo_kv.add(Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt2_found]));
-    
-            			} else if (bt6_found > 0) {
-            				bt67_label = "alavaraaja";
-            				lampo_kv.add(Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found]));
-            			} else {
-            				lampo_kv.add(0);
-            			}
-
-            			if (bt6_found > 0) {
-            				bt6.add(Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found]));
-            			} else {
-            				bt6.add(0);
-            			}
-
-            			//ulkolämpö idx 3, ei jaeta niin ei tarvita doublea
-            			bt1.add(Integer.parseInt(tiedostot.get(i).get(j)[3+rversion_found]));
-    	        		if (bt2_found==1) {
-    	        			//bt2
-    	        			bt2.add(Integer.parseInt(tiedostot.get(i).get(j)[4+rversion_found]));
-    	        		} else {
-            				//ikkuna.kirjoitaKonsolille("bt25 0\n");
-            				bt2.add(0);
-            			}
-            			//bt3
-            			bt3.add(Integer.parseInt(tiedostot.get(i).get(j)[4+rversion_found+bt2_found]));
-      			
-            			if (bt25_found==1) {
-            				//bt25
-            				bt25.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt2_found+f1345_ep15_found]));
-            			} else {
-            				bt25.add(0);
-            			}
-            			//bt71
-            			if (bt71_found==1) {
-            				bt71.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt2_found+f1345_ep15_found+bt25_found]));
-            			} else {
-            				bt71.add(0);
-            			}
-            			//gp
-            			if (gp_found==2) {
-            				//gp1 & gp2         				
-            				gp1.add(Integer.parseInt(tiedostot.get(i).get(j)[14+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found]));
-            				gp2.add(Integer.parseInt(tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found]));
-//            				ikkuna.kirjoitaKonsolille( "" +
-//            						" gp2: " + tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found] +
-//                    				" GP found: " + gp_found + " EP15GP found: " + f1345_gp1_found + " BT50 found: " + bt50_found +
-//                    				"\n"
-//                    				);
-//            				ikkuna.kirjoitaKonsolille( "gp1 idx: " + (14+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found) + "\n");
-//            				ikkuna.kirjoitaKonsolille( "gp2 idx: " + (15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found) + "\n");
-            			} else {
-            				//ikkuna.kirjoitaKonsolille("GPt 0\n");
-            				gp1.add(0);
-            				gp2.add(0);
-            			}
-            			
-            			//bt51, 53 ja 54
-            			if (bt51_found > 0) {
-            				bt51.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt2_found+f1345_ep15_found+bt71_found+bt50_found]));
-            				//ikkuna.kirjoitaKonsolille("BT51: " + tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt2_found+f1345_ep15_found+bt50_found] +  "\n");
-            			} else {
-            				bt51.add(0);
-            			}
-            			if (bt53_found > 0) {
-            				bt53.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt2_found+f1345_ep15_found+bt71_found+bt50_found+bt51_found]));
-            				//ikkuna.kirjoitaKonsolille("BT53: " + tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt2_found+f1345_ep15_found+bt50_found+bt51_found] +  "\n");
-            			} else {
-            				bt53.add(0);
-            			}
-            			if (bt54_found > 0) {
-            				bt54.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt2_found+f1345_ep15_found+bt71_found+bt50_found+bt51_found+bt53_found]));
-            				//ikkuna.kirjoitaKonsolille("BT54: " + tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt2_found+f1345_ep15_found+bt50_found+bt51_found+bt53_found] +  "\n");
-            			} else {
-            				bt54.add(0);
-            			}
-            			
-            			//bt10
-            			bt10.add(Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt6_found+bt7_found+bt2_found]));
-            			//bt11
-            			bt11.add(Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt2_found]));
-            			//bt12
-            			bt12.add(Integer.parseInt(tiedostot.get(i).get(j)[7+rversion_found+bt6_found+bt7_found+bt2_found]));
-            			//bt14
-            			bt14.add(Integer.parseInt(tiedostot.get(i).get(j)[8+rversion_found+bt6_found+bt7_found+bt2_found]));
-            			//bt17
-            			bt17.add(Integer.parseInt(tiedostot.get(i).get(j)[9+rversion_found+bt6_found+bt7_found+bt2_found]));
-//            			ikkuna.kirjoitaKonsolille( "" +
-//            				"bt10: " + tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found] +
-//            				" bt11: "  + tiedostot.get(i).get(j)[7+rversion_found+bt6_found+bt7_found] +
-//            				" bt12: " + tiedostot.get(i).get(j)[8+rversion_found+bt6_found+bt7_found] +
-//            				" bt14: " + tiedostot.get(i).get(j)[9+rversion_found+bt6_found+bt7_found] +
-//            				" bt17: " + tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found] +
-//            				" gp1: " + tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found] +
-//            				" ep15_gp1: " + tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found] +
-//            				" gp2: " + tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found+f1345_gp_found] +
-//            				" GP found: " + gp_found + " EP15GP found: " + f1345_gp_found + " BT50 found: " + bt50_found +
-//            				"BF1: " +  Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found]) +
-//            				"\n"
-//            				);
-            			
-            			if (prio_found == 1) {
-	            			//prio uima-allaslämmityksen laskentaa varten
-	            			prio.add(Integer.parseInt(tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found]));
-            			} else {
-            				prio.add(0);
-            			}
-      			
-            			
-            			if (f1345_ep15_found!=0) {
-    	        			//EP15
-    	        			//bt3
-    	        			ep15_bt3.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found]));
-    	        			//EP15-bt3 saa negatiivisen arvon jos kyselty Modbussilla F11/245 koneesta
-    	        			if (Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found]) == 32768) {
-    	        				if (cfa_fake) {
-    	        					ikkuna.getLblMLPMalli().setText("F1x45");
-    	        				}
-    	        				//ikkuna.kirjoitaKonsolille("ep15bt3: " + i + ": " + Integer.parseInt(tiedostot.get(i).get(j)[10+bt6_found+bt7_found+bt2_found]) + "\n");
-    	        			}
-    	        			//bt10
-    	        			ep15_bt10.add(Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt6_found+bt7_found+bt2_found]));
-    	        			//ikkuna.kirjoitaKonsolille("ep15bt3: " + i + ": " + Integer.parseInt(tiedostot.get(i).get(j)[12+bt6_found+bt7_found]) + "\n");
-    	        			//bt11
-    	        			ep15_bt11.add(Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt6_found+bt7_found+bt2_found]));
-    	        			//bt12
-    	        			ep15_bt12.add(Integer.parseInt(tiedostot.get(i).get(j)[13+rversion_found+bt6_found+bt7_found+bt2_found]));
-    	        			//bt14
-    	        			ep15_bt14.add(Integer.parseInt(tiedostot.get(i).get(j)[14+rversion_found+bt6_found+bt7_found+bt2_found]));
-    	        			//bt17
-    	        			ep15_bt17.add(Integer.parseInt(tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt2_found]));
-    	        			//f1345 GP1
-    	        			if (f1345_gp1_found==1){
-    	        				ep15_gp1.add(Integer.parseInt(tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found+f1345_gp1_found+f1345_gp_fix]));
-								//ikkuna.kirjoitaKonsolille("EP15GP1: " + tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found+f1345_gp1_found+f1345_gp_fix] + "\n");
-								//ikkuna.kirjoitaKonsolille("EP15GP1 idx: " + (15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found+f1345_gp1_found+f1345_gp_fix) + "\n");
-    	        			} else {
-    	        				ep15_gp1.add(0);
-    	        			}
-    	        			
-    	        			if (f1345_gp2_found==1) { //GP2 EP15
-    	        				ep15_gp2.add(Integer.parseInt(tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found+f1345_gp1_found+f1345_gp2_found+f1345_gp_fix]));
-    	        				//ikkuna.kirjoitaKonsolille("EP15GP2: " + tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+gp_found+f1345_gp1_found+f1345_gp2_found+f1345_gp_fix] + "\n");    	        				
-    	        			} else {
-    	        				ep15_gp2.add(0);
-    	        			}
-    	        			
-    	        			
-            			} else {
-            				ep15_bt3.add(0);
-            				ep15_bt10.add(0);
-            				ep15_bt11.add(0);
-            				ep15_bt12.add(0);
-            				ep15_bt14.add(0);
-            				ep15_bt17.add(0);
-            				ep15_gp1.add(0);
-            				ep15_gp2.add(0);
-            			}
-            			//sisälämpö idx 14, ei jaeta niin ei tarvita doublea
-            			if (bt50_found > 0) {
-            				bt50.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt2_found+f1345_ep15_found]));
-            			} else {
-            				bt50.add(0);
-            			}
-            			
-            			
-            			//lämpöpyynti idx 17, ei jaeta niin ei tarvita doublea
-            			cs.add(Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found]));
-            			//asteminuutit
-            			dm.add(Integer.parseInt(tiedostot.get(i).get(j)[13+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found]));
-            			if (F1345LisaysAskel == 0 && ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
-            				//F1345 add step
-            				add_step.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found])*100);
-             			} else {
-                   			//suorasähkö
-             				if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
-             					kw_sahko.add(10*F1345LisaysAskel*Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found]));
-             				} else {
-             					kw_sahko.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found]));
-             					//ikkuna.kirjoitaKonsolille(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found] + "\n");
-             				}
-            			}
-            			//F1x55 Flow
-            			if (f1255_bf1_found > 0) {
-	            			bf1.add(Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found]));
-            			} else {
-            				bf1.add(0);
-            			}
-            			//F1x55 compressor frequency active
-            			if (f1255_cfa_found==1 && cfa_fake==false){
-            				cfa.add(Integer.parseInt(tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found]));
-            			} else {
-            				if (kompr_kaynnissa) {
-            					cfa.add(500);
-            				} else {
-            					cfa.add(0);
-            				}
-            			}
-
-            			//FLM ilman lämpötilat
-            			if (bt20_found > 0) {
-            				bt20.add(Integer.parseInt(tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found]));
-            				//ikkuna.kirjoitaKonsolille("bt20: " + tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found] + "\n");
-            			} else {
-            				bt20.add(0);
-            			}
-            			if (bt21_found > 0) {
-            				bt21.add(Integer.parseInt(tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found]));
-            				//ikkuna.kirjoitaKonsolille("bt21: " + tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found] + "\n");
-            			} else {
-            				bt21.add(0);
-            			}
-      			
-            			if(!tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase(edellinentila)){
-            				prosessinalku=0;
-            			}
-            			//ikkuna.kirjoitaKonsolille("PCA " + tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found] + "\n");				
-            			// Relays PCA-Base 7
-            			// otetaan PCA-Base ylös tallennusta varten
-            			relaysPCAbase.add(Integer.parseInt(tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found]));
-            			if(tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase("7"))
-            			{
-            				//0b00000111 = 7
-            				//käyntiaika, Relays PCA-Base on idx 20, arvo 7 = lämmitys
-            				//jos prio 40, lämmitetään uima-allasta
-            				//uima-allaskin on lämmitystä, mutta erotellaan se käyntiaikasuhteessa
-            				if (prio_found==1) {
-	            				if (Integer.parseInt(tiedostot.get(i).get(j)[16+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found]) == 40) {
-	            					kaytto_ua++;
-	            				}
-            				}
-
-    	        			kaytto_la++;
-    	        			//skipataan pari ensimmäistä arvoa koska prosessi ei ole stabiloitunut
-    	        			//ikkuna.kirjoitaKonsolille(prosessinalku + "\n");
-    	        			if(prosessinalku>=120){
-    	        				if (f1345_ep15_found!=0){
-    	        					//F1345
-    	        					//delta lämmitysvesi meno idx9 (BT12) - tulo idx4 (BT3), ei jaeta niin ei tarvita doublea
-    	        					lampo_delta_la.add(Integer.parseInt(tiedostot.get(i).get(j)[7+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[4+rversion_found+bt2_found]));
-    	        					//ikkuna.kirjoitaKonsolille("Lämm 1345: " + bt2_found + ": " + Integer.parseInt(tiedostot.get(i).get(j)[7+rversion_found+bt2_found+bt6_found+bt7_found]) + "\n");    	
-    	        				} else  {
-    	        					//ei-F1345
-    	        					//delta lämmitysvesi meno idx4 (BT2) - tulo idx5 (BT3), ei jaeta niin ei tarvita doublea
-    	        					lampo_delta_la.add(Integer.parseInt(tiedostot.get(i).get(j)[3+rversion_found+bt2_found]) - Integer.parseInt(tiedostot.get(i).get(j)[4+rversion_found+bt2_found]));
-    	        					//ikkuna.kirjoitaKonsolille("Lämm: " + i + ": " + Integer.parseInt(tiedostot.get(i).get(j)[3+rversion_found+bt2_found]) + "\n");
-    	        				}
-    	        				//cop
-    	        				cop_la.add(lastcop=laskeCOP(bt12.get(bt12.size()-1),bt3.get(bt3.size()-1),bt14.get(bt14.size()-1),bt17.get(bt17.size()-1),bt10.get(bt10.size()-1),cop_035, cop_045));
-    	        				//delta keruu tulo idx8 (BT10) - tulo idx9 (BT11), ei jaeta niin ei tarvita doublea
-            					lampo_delta_keruu.add(Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt2_found]) - Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt6_found+bt7_found+bt2_found]));
-            					//etsitään matalin ja korkein bt10
-            					//matalin
-            					if (bt10_min > Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt6_found+bt7_found+bt2_found])) {
-            						bt10_min = Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt6_found+bt7_found+bt2_found]);
-            					}
-            					//korkein
-            					if (bt10_max < Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt6_found+bt7_found+bt2_found])) {
-            						bt10_max = Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt6_found+bt7_found+bt2_found]);
-            					}
-            					//etsitään matalin ja korkein bt11
-            					//matalin
-            					if (bt11_min > Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt2_found])) {
-            						bt11_min = Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt2_found]);
-            					}
-            					//korkein
-            					if (bt11_max < Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt2_found])) {
-            						bt11_max = Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt6_found+bt7_found+bt2_found]);
-            					}
-            					
-    	        				if (1<Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found])) {
-    		        				//lisälämpö
-    	        					if (f1345_ep15_found!=0 && Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found]) != 32768){
-    	        						lamm_sahko.add(F1345LisaysAskel*Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found]));
-    	        						//ikkuna.kirjoitaKonsolille("Lämm 1345: " + i + ": " + F1345LisaysAskel + "/" + Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+f1345_ep15_found+f1345_bp_found]) + "\n");
-    	        					} else {
-    	        						lamm_sahko.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found]));
-    	        					}
-    	        				}
-    	        			}
-    	        			if(!kompr_kaynnissa){
-    	        				kompr_kaynnistyksia++;
-    	        				kompr_kaynnissa=true;
-    	        				if (!laske_kaynnistys_jos_kaynnissa && i==0 && j==2) {
-    	        					ikkuna.kirjoitaKonsolille("käynnistystä ei lasketa (" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(j-2).getTime()) + ")\n");
-    	        					kompr_kaynnistyksia--;
-    	        				}
-    	        			}
-    	        			
-
-    	        		// Relays PCA-Base 15 tai 11
-    	        		} else if (tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase("15") ||
-    	        				tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase("11"))
-    	        		{
-    	        			//0b00001111 = 15
-    	        			//käyntiaika, Relays PCA-Base on idx 20, arvo 15 = käyttövesi, 11 = kayttovesi FLM:n patterilla
-            				//FLM - keruun pumppu on FLMssä, muutoin normi kvkäyttö - ei pidä paikkaansa, huuhaata
-//            				if (tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase("11")) {
-//            					kaytto_kv_flm++;
-//            					//ikkuna.kirjoitaKonsolille("FLM: " + tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found]);
-//            				}
-    	        			kaytto_kv++;
-    	        			if(prosessinalku>=120){
-    	        				if (f1345_ep15_found!=0){
-    	        					//F1345
-    	        					//delta lämmitysvesi meno idx9 (BT12) - tulo idx4 (BT3), ei jaeta niin ei tarvita doublea
-    	        					lampo_delta_kv.add(Integer.parseInt(tiedostot.get(i).get(j)[7+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[4+rversion_found+bt2_found]));	
-    	        				} else  {
-    	        					//ei-F1345
-    	        					//delta lämmitysvesi meno idx4 (BT2) - tulo idx5 (BT3), ei jaeta niin ei tarvita doublea
-    	        					lampo_delta_kv.add(Integer.parseInt(tiedostot.get(i).get(j)[3+rversion_found+bt2_found]) - Integer.parseInt(tiedostot.get(i).get(j)[4+rversion_found+bt2_found]));
-    	        				}
-    	        				//cop
-    	        				cop_kv.add(lastcop=laskeCOP(bt12.get(bt12.size()-1),bt3.get(bt3.size()-1),bt14.get(bt14.size()-1),bt17.get(bt17.size()-1),bt10.get(bt10.size()-1),cop_035, cop_045));
-    	        				//delta keruu tulo idx8 (BT10) - tulo idx9 (BT11), ei jaeta niin ei tarvita doublea
-            					lampo_delta_keruu.add(Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found+bt6_found+bt7_found]));
-            					//etsitään matalin ja korkein bt10
-            					//matalin
-            					if (bt10_min > Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found+bt6_found+bt7_found])) {
-            						bt10_min = Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found+bt6_found+bt7_found]);
-            					}
-            					//korkein
-            					if (bt10_max < Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found+bt6_found+bt7_found])) {
-            						bt10_max = Integer.parseInt(tiedostot.get(i).get(j)[5+rversion_found+bt2_found+bt6_found+bt7_found]);
-            					}
-            					//etsitään matalin ja korkein bt11
-            					//matalin
-            					if (bt11_min > Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt2_found+bt6_found+bt7_found])) {
-            						bt11_min = Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt2_found+bt6_found+bt7_found]);
-            					}
-            					//korkein
-            					if (bt11_max < Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt2_found+bt6_found+bt7_found])) {
-            						bt11_max = Integer.parseInt(tiedostot.get(i).get(j)[6+rversion_found+bt2_found+bt6_found+bt7_found]);
-            					}
-
-    	        				if (1<Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found])) {
-    		        				//lisä kv:lle - jos asteminuutit ovat lisän puolella niin silloin sähköllä autetaan
-    		        				kv_sahko.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found]));
-    		        				}
-    	        			}
-    	        			
-    	        			if(!kompr_kaynnissa){
-    	        				kompr_kaynnistyksia++;
-    	        				kompr_kaynnissa=true;
-    	        				if (!laske_kaynnistys_jos_kaynnissa && i==0 && j==2) {
-    	        					ikkuna.kirjoitaKonsolille("käynnistystä ei lasketa (" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(j-2).getTime()) + ")\n");
-    	        					kompr_kaynnistyksia--;
-    	        				}
-    	        			}
-    	        			// Relays PCA-Base 10
-    	        			// puuttuu prio
-    	        		} else if (tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase("10")){
-    	        			//0b00000111 = 10
-    	        			//vastusaika, Relays PCA-Base on idx20, arvo 10 = tehdään käyttövettä suoralla sähköllä
-    	        			//sähkövoima löytyy idx 15, jakaja on div_add (ei toistaiseksi tulosteta)
-    	        			//korjaus 1.2.15: kaytto_kv tarvitaan koska kyseessä on käyttövesituotanto
-    	        			kaytto_kv++;
-    	        			kompr_kaynnissa=false;
-    	        			//ikkuna.kirjoitaKonsolille("TIA: " + tiedostot.get(i).get(j)[11+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+f1345_ep15_found+f1345_bp_found] + "\n");
-            				if (1<Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found])) {
-    		        			kv_sahko.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found]));
-    	        			}
-            				// Relays PCA-Base 2
-    	        		} else if (tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found].equalsIgnoreCase("2")){
-    	        			//0b00000100 = 2
-    	        			//vastusaika, Relays PCA-Base on idx20, arvo 2 = lämmitetään suoralla sähköllä tai kiertopumppu pyörii
-    	        			//sähkövoima löytyy idx 15, jakaja on div_add (ei toistaiseksi tulosteta)
-    	        			if (!tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found].equalsIgnoreCase("0")) {
-        	        			//korjaus 1.2.15: kaytto_la tarvitaan koska kyseessä on lämmitysvesituotanto
-        	        			kaytto_la++;
-    	        				//lämmitetään suoralla sähköllä
-    		        			lamm_sahko.add(Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found]));
-    	        			} else { //vain kiertopumppu
-    	        				//tulkitaan lepotilaksi
-    		        			kaytto_le++;
-    		        			kompr_kaynnissa=false;
-    	        			}
-    	        			//ei ole kompura päällä
-    	        			kompr_kaynnissa=false;
-    	        		} else {
-    	        			//kompuran lepoaika, Relays PCA-Base on idx20, arvo on mitä on
-    	        			kaytto_le++;
-    	        			kompr_kaynnissa=false;
-    	        		}
-
-            			//COP laskenta
-            			//int bt12, int bt3, int bt14, int bt17, int bt10, int cop35, int cop45
-            			if (kompr_kaynnissa) {
-            				cop.add(lastcop=laskeCOP(bt12.get(bt12.size()-1),bt3.get(bt3.size()-1),bt14.get(bt14.size()-1),bt17.get(bt17.size()-1),bt10.get(bt10.size()-1),cop_035, cop_045));
-            				//ikkuna.kirjoitaKonsolille(lastcop + "\n");
-            			} else {
-            				//cop.add(0);
-            				cop.add(lastcop);
-            				//cop.add((int)(((cop_035+cop_045)/2)*100.0));
-            			}
-
-            			//TEHO laskenta
-            			//int bt12, int bt3, int bt14, int bt17, int bt10, int cop35, int cop45
-            			//int bt12/bt2, int bt3, double ominaislampokapasiteetti_vesi, double virtaus
-            			if (f1255_bf1_found != 0) {
-            				teho.add(laskeTEHO(bt2.get(bt2.size()-1), bt3.get(bt3.size()-1), bf1.get(bf1.size()-1)));
-            			} else {
-            				teho.add(0);
-            			}
-
-            			//***********************************************
-            			//
-            			//
-            			//F1345 EP15-Prio
-            			//***********************************************
-            			//LÄMMITYS
-            			if (f1345_ep15_found!=0){
-    	        			if(!tiedostot.get(i).get(j)[17+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found].equalsIgnoreCase(ep15_edellinentila)){
-    	        				ep15_prosessinalku=0;
-    	        			}
-    	        			//otetaan EP15 ja PCA prio ylös tallennusta varten
-                			ep15_prio.add(Integer.parseInt(tiedostot.get(i).get(j)[17+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found]));
-                			//ikkuna.kirjoitaKonsolille(ep15_prio.get(ep15_prio.size()-1) + "\n");
-                			if(tiedostot.get(i).get(j)[17+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found].equalsIgnoreCase("1")){
-    	        				ep15_kaytto_la++;
-    	        				ep15_cop_la.add(ep15_lastcop=laskeCOP(ep15_bt12.get(ep15_bt12.size()-1),ep15_bt3.get(ep15_bt3.size()-1),ep15_bt14.get(ep15_bt14.size()-1),ep15_bt17.get(ep15_bt17.size()-1),ep15_bt10.get(ep15_bt10.size()-1),cop_035, cop_045));
-        	        			if(!ep15_kompr_kaynnissa){
-        	        				ep15_kompr_kaynnistyksia++;
-        	        				ep15_kompr_kaynnissa=true;
-        	        				if (!laske_kaynnistys_jos_kaynnissa && i==0 && j==2) {
-        	        					ikkuna.kirjoitaKonsolille("käynnistystä ei lasketa (" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(j-2).getTime()) + ")\n");
-        	        					ep15_kompr_kaynnistyksia--;
-        	        				}
-        	        			}
-    		        			if(ep15_prosessinalku>=120){
-    			        			//F1345
-    	        					//delta lämmitysvesi meno idx9 (BT12) - tulo idx4 (BT3), ei jaeta niin ei tarvita doublea
-    	        					ep15_lampo_delta_la.add(Integer.parseInt(tiedostot.get(i).get(j)[13+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found]));
-    	        					//delta keruu
-    	        					ep15_lampo_delta_keruu.add(Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt2_found+bt6_found+bt7_found]));
-    	        					//etsitään matalin ja korkein ep15-bt10
-    	        					//matalin
-    	        					if (ep15_bt10_min > Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt2_found+bt6_found+bt7_found])) {
-    	        						ep15_bt10_min = Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt2_found+bt6_found+bt7_found]);
-    	        					}
-    	        					//korkein
-    	        					if (ep15_bt10_max < Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt2_found+bt6_found+bt7_found])) {
-    	        						ep15_bt10_max = Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt2_found+bt6_found+bt7_found]);
-    	        					}
-    	        					//etsitään matalin ja korkein ep15-bt11
-    	        					//matalin
-    	        					if (ep15_bt11_min > Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt2_found+bt6_found+bt7_found])) {
-    	        						ep15_bt11_min = Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt2_found+bt6_found+bt7_found]);
-    	        					}
-    	        					//korkein
-    	        					if (ep15_bt11_max < Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt2_found+bt6_found+bt7_found])) {
-    	        						ep15_bt11_max = Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt2_found+bt6_found+bt7_found]);
-    	        					}
-    		        			}
-    		        		//KÄYTTÖVESI
-    	        			} else if (tiedostot.get(i).get(j)[17+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found].equalsIgnoreCase("2")) {
-    	        				ep15_kaytto_kv++;
-    	        				ep15_cop_kv.add(ep15_lastcop=laskeCOP(ep15_bt12.get(ep15_bt12.size()-1),ep15_bt3.get(ep15_bt3.size()-1),ep15_bt14.get(ep15_bt14.size()-1),ep15_bt17.get(ep15_bt17.size()-1),ep15_bt10.get(ep15_bt10.size()-1),cop_035, cop_045));
-    		        			if(!ep15_kompr_kaynnissa){
-    		        				ep15_kompr_kaynnistyksia++;
-    		        				ep15_kompr_kaynnissa=true;
-    		        			}
-    		        			//delta lämmitysvesi meno idx9 (BT12) - tulo idx4 (BT3), ei jaeta niin ei tarvita doublea
-            					ep15_lampo_delta_kv.add(Integer.parseInt(tiedostot.get(i).get(j)[13+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[10+rversion_found+bt2_found+bt6_found+bt7_found]));
-            					//delta keruu
-            					ep15_lampo_delta_keruu.add(Integer.parseInt(tiedostot.get(i).get(j)[12+rversion_found+bt2_found+bt6_found+bt7_found]) - Integer.parseInt(tiedostot.get(i).get(j)[11+rversion_found+bt2_found+bt6_found+bt7_found]));
-    	        			
-    	        			} else {
-    	        				//LEPO
-    	        				ep15_kaytto_le++;
-    	        				ep15_kompr_kaynnissa=false;
-    	        			}
-            			} else {
-            				ep15_prio.add(0);
-            			}
-            			
-            			//COP laskenta EP15
-            			//int bt12, int bt3, int bt14, int bt17, int bt10, int cop35, int cop45
-            			if (ep15_kompr_kaynnissa) {
-            				ep15_cop.add(ep15_lastcop=laskeCOP(ep15_bt12.get(ep15_bt12.size()-1),ep15_bt3.get(ep15_bt3.size()-1),ep15_bt14.get(ep15_bt14.size()-1),ep15_bt17.get(ep15_bt17.size()-1),ep15_bt10.get(ep15_bt10.size()-1),cop_035, cop_045));
-            				//ikkuna.kirjoitaKonsolille(ep15_lastcop + "\n");
-            			} else {
-            				//cop.add(0);
-            				ep15_cop.add(ep15_lastcop);
-            				//cop.add((int)(((cop_035+cop_045)/2)*100.0));
-            			}            			
-            			
-            			//prosessin alkutarkistuksen sekuntimäärä
-            			prosessinalku=prosessinalku+(int)(mittausvali_ms/1000);
-            			//ikkuna.kirjoitaKonsolille(prosessinalku + "\n");
-            			//otetaan edellinen tila (idx20) muistiin
-            			edellinentila = tiedostot.get(i).get(j)[15+rversion_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+bt2_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found];
-            			if (f1345_ep15_found!=0){
-            				//ep15 prosessinalku
-            				ep15_prosessinalku=ep15_prosessinalku+(int)(mittausvali_ms/1000);
-            				//otetaan edellinen EP15 tila muistiin
-            				ep15_edellinentila = tiedostot.get(i).get(j)[17+rversion_found+bt2_found+bt6_found+bt7_found+bt25_found+bt71_found+bt50_found+bt51_found+bt53_found+bt54_found+f1345_ep15_found+f1345_bp_found+f1255_bf1_found+f1255_cfa_found+f1345_ep15pca_found+gp_found+f1345_gp1_found+f1345_gp2_found+bt20_found+bt21_found];
-            			}
-            			//laskentaa varten
-    	        		if(edellinenriviaika.getTimeInMillis()==0){
-    	        			//eka rivi
-    	        			edellinenriviaika.set(vuosi, kuukausi, paiva, tunti, minuutti, sekunti);
-    	        		} else {
-    	        			if (mittausvali_ms == 0) {
-    	        				mittausvali_ms = logiaika.get(logiaika.size()-1).getTimeInMillis() - logiaika.get(0).getTimeInMillis();
-    	        				LogintutkijaGUI.getLblMittausvaliKentta().setText(parseMittausvali((Math.round((double)mittausvali_ms/1000*10.0)/10.0)*1000));
-    	        			}
-    	        			if(Math.abs(((logiaika.get(logiaika.size()-1).getTimeInMillis()) - (edellinenriviaika.getTimeInMillis())) - mittausvali_ms) > 10000 && ikkuna.isJatkuvatlogit()){
-    	        				//todennäköisesti ei peräkkäinen tiedosto, progress 100:n ja lopetus
-    		        			ikkuna.kirjoitaKonsolille("Ei peräkkäinen logirivi " + tiedostot.get(i).get(j)[0] + " " + tiedostot.get(i).get(j)[1] + " (" + (((logiaika.get(logiaika.size()-1).getTimeInMillis()) - (edellinenriviaika.getTimeInMillis())) - mittausvali_ms)/1000 + ") löydetty. Laita samaan hakemistoon vain peräkkäisiä logeja.\nTai ota \"jatkuvat logit\" -valinta pois.\n");
-    		        			//yhteenvetoikkunan numerot
-    		        			ikkuna.paivitaNumerot(kaytto_la, kaytto_kv, kaytto_le, kv_sahko, mittausvali_ms,
-    		    						kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
-    		    						lampo_kv, lampo_delta_la, lampo_delta_kv, lampo_delta_keruu, bt67_label, lamm_sahko,
-    		    						bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa, kaytto_ua, kaytto_la_flm,
-    		    						kaytto_kv_flm);
-    		        			ikkuna.setProgress(100);
-    		        			//poistetaan viimeinen aika jottei tule hassuja graafeja
-    		        			logiaika.remove(logiaika.size()-1);
-    		            		//Käyrien nayttöä varten
-    		            		teeKayraTaulukko();
-    		            		if (f1345_ep15_found != 0 && ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
-    		            			ikkuna.getRadioNappulaEP14().setEnabled(true);
-    		            			ikkuna.getRadioNappulaEP15().setEnabled(true);
-    		                    } else {
-    		                    	ikkuna.getRadioNappulaEP14().setEnabled(false);
-    		                    	ikkuna.getRadioNappulaEP15().setEnabled(false);
-    		                    }
-    		        			return mlpfound + " " + logiaika.size() + " tietueella.\n";
-    		        		}
-    	        			edellinenriviaika.set(vuosi, kuukausi, paiva, tunti, minuutti, sekunti);
-    	        		}
-    	        		
-                    	if(j==1){
-                    		//mittausväli tarvitaan laskemiseen sekä jatkuvien logien tarkistukseen
-                    		//ikkuna.kirjoitaKonsolille("lokiaika: " + (edellinenriviaika.getTimeInMillis() - logiaika.get(0).getTimeInMillis()) + "\n");
-                    		mittausvali_ms = logiaika.get(1).getTimeInMillis() - logiaika.get(0).getTimeInMillis();
-                    	}
-            		} //rivin loppu
-            } //tiedoston loppu
-    	        ikkuna.setProgress((i+1)*100/tiedostot.size());
-    	      //kirjoitetaan lopetusaika
-    	        LogintutkijaGUI.setAikaLopetus("  ->  " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(logiaika.size()-1).getTime()));
-
-    		}
-        	
-    		//yhteenvetoikkunan numerot
-    		ikkuna.paivitaNumerot(kaytto_la, kaytto_kv, kaytto_le, kv_sahko, mittausvali_ms,
-    				kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
-    				lampo_kv, lampo_delta_la, lampo_delta_kv, lampo_delta_keruu, bt67_label,
-    				lamm_sahko, bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa, kaytto_ua,
-    				kaytto_la_flm, kaytto_kv_flm);
-
-    		//Käyrien nayttöä varten
-    		teeKayraTaulukko();
-    		
-    		if (f1345_ep15_found != 0 && ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
-    			ikkuna.getRadioNappulaEP14().setEnabled(true);
-    			ikkuna.getRadioNappulaEP15().setEnabled(true);
-            } else {
-            	ikkuna.getRadioNappulaEP14().setEnabled(false);
-            	ikkuna.getRadioNappulaEP15().setEnabled(false);
-            }
-
-    		ikkuna.getRadioNappulaEP14().addItemListener(new ItemListener() {
-            	
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                	if (!ikkuna.getRadioNappulaEP14().isSelected()){
-                		//ikkuna.kirjoitaKonsolille("EP15\n");
-                		ikkuna.paivitaNumerot(ep15_kaytto_la, ep15_kaytto_kv, ep15_kaytto_le, kv_sahko, mittausvali_ms,
-        						kokaika, ep15_kompr_kaynnistyksia, bt50, bt1, cs,
-        						lampo_kv, ep15_lampo_delta_la, ep15_lampo_delta_kv, ep15_lampo_delta_keruu, bt67_label,
-        						lamm_sahko, ep15_bt10_min, ep15_bt10_max, ep15_bt11_min, ep15_bt11_max, ep15_cop_la, ep15_cop_kv, cfa, kaytto_ua,
-        						kaytto_la_flm, kaytto_kv_flm);
-                		//ei näytetä lisäystä jos F1345
-                		ikkuna.setSal(0);
-                		ikkuna.setSav(0);
-                		ikkuna.setUal(0);
-                		ikkuna.setLaFlm(0);
-                		ikkuna.setKvFlm(0);
-                		ikkuna.naytaGraafi(ikkuna.getLa(), ikkuna.getSal(), ikkuna.getUal(), ikkuna.getLaFlm(), ikkuna.getKvFlm(), ikkuna.getKv(), ikkuna.getSav(), ikkuna.getLe());
-                	}
-                	else if (ikkuna.getRadioNappulaEP14().isSelected()){
-                		//ikkuna.kirjoitaKonsolille("EP14\n");
-                		ikkuna.paivitaNumerot(kaytto_la, kaytto_kv, kaytto_le, kv_sahko, mittausvali_ms,
-        						kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
-        						lampo_kv, lampo_delta_la, lampo_delta_kv, lampo_delta_keruu, bt67_label,
-        						lamm_sahko, bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa,
-        						kaytto_ua, kaytto_la_flm, kaytto_kv_flm);
-                		ikkuna.naytaGraafi(ikkuna.getLa(), ikkuna.getSal(), ikkuna.getUal(), ikkuna.getLaFlm(), ikkuna.getKvFlm(), ikkuna.getKv(), ikkuna.getSav(), ikkuna.getLe());
-                	}
-                }
-            });
-
-    	    	return mlpfound + " " + logiaika.size() + " tietueella. Login alku: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()) + ", loppu: " + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(logiaika.size()-1).getTime()) + ".\n";
-    	}
-
-        
         // laskeTEHO
     	// lasketaan TEHO
         //        
@@ -3035,9 +2072,13 @@ public class LogintutkijaOhjain {
     		kayra_taulukko_nimet.add(41,"paluu bt71");
     		kayra_taulukko.add(42,ep15_gp2);
     		kayra_taulukko_nimet.add(42,"keruu nopeus EP15");
-    		//VILP
-    		//kayra_taulukko.add(43,bt16); turha,koska BT11
-    		//kayra_taulukko_nimet.add(43,"lämmönvaihdin bt16");
+    		//virtamuuntajat
+    		kayra_taulukko.add(43,be1);
+    		kayra_taulukko_nimet.add(43,"be1 L1 A*10");
+    		kayra_taulukko.add(44,be2);
+    		kayra_taulukko_nimet.add(44,"be2 L2 A*10");
+    		kayra_taulukko.add(45,be3);
+    		kayra_taulukko_nimet.add(45,"be3 L3 A*10");
         }
            	
     	// muunnaCTC
@@ -3268,9 +2309,9 @@ public class LogintutkijaOhjain {
     		return sarakeotsikot;
     	}
     	
-        // tabulaattoriJakaja2
+        // tabulaattoriJakaja
     	// 2-tasoinen lista helpottamaan eri mallien logien lukemista
-    	public String[][] tabulaattoriJakaja2(String logitiedosto, char erotin, String type) throws IOException{
+    	public String[][] tabulaattoriJakaja(String logitiedosto, char erotin, String type) throws IOException{
     		List<List<String>> sarakelista = new ArrayList<List<String>>();
     		BufferedReader br = new BufferedReader(new FileReader(logitiedosto));
     		String rivi = br.readLine();   		
@@ -3376,7 +2417,7 @@ public class LogintutkijaOhjain {
         // tabulaattoriJakaja
     	// tabulaattorierotetut arvot ArrayListiin
         //
-    	public ArrayList<String []> tabulaattoriJakaja(String logfile, char separator) throws IOException{
+    	public ArrayList<String []> tabulaattoriJakajaOFF(String logfile, char separator) throws IOException{
     		// http://opencsv.sourceforge.net/
     		//CSVReader tabFormatReader = new CSVReader(new FileReader(logfile), '\t');
     		CSVReader tabFormatReader = new CSVReader(new FileReader(logfile), separator, '\'');
