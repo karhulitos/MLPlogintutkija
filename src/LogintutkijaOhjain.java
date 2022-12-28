@@ -2074,11 +2074,11 @@ public class LogintutkijaOhjain {
     		kayra_taulukko_nimet.add(42,"keruu nopeus EP15");
     		//virtamuuntajat
     		kayra_taulukko.add(43,be1);
-    		kayra_taulukko_nimet.add(43,"be1 L1 A*10");
+    		kayra_taulukko_nimet.add(43,"be1 L1 A");
     		kayra_taulukko.add(44,be2);
-    		kayra_taulukko_nimet.add(44,"be2 L2 A*10");
+    		kayra_taulukko_nimet.add(44,"be2 L2 A");
     		kayra_taulukko.add(45,be3);
-    		kayra_taulukko_nimet.add(45,"be3 L3 A*10");
+    		kayra_taulukko_nimet.add(45,"be3 L3 A");
         }
            	
     	// muunnaCTC
