@@ -674,7 +674,7 @@ public class LogintutkijaOhjain {
 	            					ikkuna.getTietolahde()  == 0) {
 	        					ikkuna.getLblMLPMalli().setText(nibecontroller + "-VILP");
 	        					kaynti_haku = "Kompressori (EB101)";
-	        				} else if (haeMapista(kentat,"BS1-ref",false) != -1 &&
+	        				} else if ((haeMapista(kentat,"BS1-ref",false) != -1 || haeMapista(kentat,"BT20",false) != -1 ) &&
 	            					ikkuna.getTietolahde()  == 0) {
 	        					ikkuna.getLblMLPMalli().setText(nibecontroller + "-PILP");
 	        				} else if (haeMapista(kentat,"EB100-EP15 Prio",false) != -1) {
