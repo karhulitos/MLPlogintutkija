@@ -93,6 +93,7 @@ public class LogintutkijaGUI extends JPanel
 	private static boolean autoupdate = false;
 	//Yhteenvetosivun kentät
 	private JLabel lblMLPMalli = new JLabel("MLP");
+	private JLabel suos5 = new JLabel("-2...-5°C");
 	private static String lokiVersio = "0000";
 	private static String lokiRVersio = "0";
 	private static String aikaAloitus = "Aika";
@@ -492,7 +493,6 @@ public class LogintutkijaGUI extends JPanel
         keskipaneeli.add(lblDeltaKeruuAvgKentta);
         keskipaneeli.add(lblDeltaKeruuMinKentta);
         keskipaneeli.add(lblDeltaKeruuMaxKentta); 
-        JLabel suos5 = new JLabel("-2...-5°C");
         suos5.setForeground(Color.gray);
         keskipaneeli.add(suos5);
         //bt10 minmax
@@ -1592,7 +1592,7 @@ public class LogintutkijaGUI extends JPanel
         
         
         catch (Exception e) {
-        	konsoli.append(e.getMessage());
+        	konsoli.append("Trendien datavirhe: " + e.getMessage());
         }
         
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
@@ -1762,9 +1762,8 @@ public class LogintutkijaGUI extends JPanel
                 //tehdään valintanappulat
                 for (int i = 0; i < ohjain.getKayra_taulukko().size(); i++) 
             	  {
-            	   //konsoli.append(ohjain.getKayra_taulukko_nimet().get(i) + "\n");
             	   final int suure = i;
-		                final JCheckBox chkbox = new JCheckBox(ohjain.getKayra_taulukko_nimet().get(i));
+		           final JCheckBox chkbox = new JCheckBox(ohjain.getKayra_taulukko_nimet().get(i));
 		                if (i >= 0 && i < 7) {
 		                	if (Math.abs(Collections.max(ohjain.getKayra_taulukko().get(i)))>0) {
 		                		chkbox.setSelected(true);
@@ -1782,8 +1781,8 @@ public class LogintutkijaGUI extends JPanel
 		                	if (i >= 39 && i <= 40) {
 		                		chkbox.setSelected(true);
 		                		(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(suure, true, true);
-		                		}
 		                	}
+		                }
 
 		                //checkboksien kuuntelijat
 		                chkbox.addItemListener(new ItemListener() {
@@ -1801,6 +1800,8 @@ public class LogintutkijaGUI extends JPanel
 		                    	}
 		                    }
 		                });
+		                
+
 
 		                if (i >= 0 && i < 15){
 		                	panel21.add(chkbox);
@@ -1974,6 +1975,14 @@ public class LogintutkijaGUI extends JPanel
 
 	public void setLblMLPMalli(JLabel lblMLPMalli) {
 		this.lblMLPMalli = lblMLPMalli;
+	}
+	
+	public JLabel getLblSuos5() {
+		return suos5;
+	}
+
+	public void setLblSuos5(JLabel suos5) {
+		this.suos5 = suos5;
 	}
 
 	public int getTietolahde() {
@@ -2176,9 +2185,9 @@ public class LogintutkijaGUI extends JPanel
                         	Thread.sleep(100);
                     	} catch (InterruptedException ex) {
                     	}
-         			}
-        		kayrat.getChart().getXYPlot().setDataset(teeTietoJoukko(ohjain.getKayra_taulukko_nimet(), ohjain.getKayra_taulukko(),ohjain.getLogiaika()));
-        		kayrat.getChart().getXYPlot().getDomainAxis().setLabel(aikaAloitus + aikaLopetus);
+         			}      		
+         		kayrat.getChart().getXYPlot().setDataset(teeTietoJoukko(ohjain.getKayra_taulukko_nimet(), ohjain.getKayra_taulukko(),ohjain.getLogiaika()));
+         		kayrat.getChart().getXYPlot().getDomainAxis().setLabel(aikaAloitus + aikaLopetus);
         		//odotetaan mittausvälin verran
                 try {
                     Thread.sleep(LogintutkijaOhjain.getMittausvali_ms());

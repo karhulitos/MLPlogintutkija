@@ -489,6 +489,11 @@ public class LogintutkijaOhjain {
         	//kesäajan aiheuttaman käyrien taiteellisen piirron poisto
 			TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 			
+			//vilp hack
+			if (ikkuna.getLblSuos5().isVisible() == false ) {
+				ikkuna.getLblSuos5().setVisible(true);
+			}
+			
 			//Nibe controller
 			if (getValittu_Tiedosto_Filtteri().equals("nibes") && ikkuna.getTietolahde() == 0) {
 				nibecontroller = "S";
@@ -663,12 +668,20 @@ public class LogintutkijaOhjain {
 								ikkuna.getLblMLPMalli().setText("MLP");
 							}
 						} else {
+							//VILP
 	            			if (haeMapista(kentat,"compr. state",false) != -1 &&
 	            					haeMapista(kentat,"compr. freq. calc",false) != -1 &&
 	            					haeMapista(kentat,"compr. protection mode",false) != -1 &&
 	            					ikkuna.getTietolahde()  == 0) {
-	        					ikkuna.getLblMLPMalli().setText(nibecontroller + "-VILP");
-	        					kaynti_haku = "compr. state(44457)";
+	            				//VMM mukana
+	            				if (haeMapista(kentat,"BT63",false) != -1) {
+	            					ikkuna.getLblMLPMalli().setText(nibecontroller + "-VILPVMM");
+	            				} else {
+		        					ikkuna.getLblMLPMalli().setText(nibecontroller + "-VILP");
+		        					kaynti_haku = "compr. state(44457)";
+		        					tia_haku="Add.Step"; //spartani lisäys
+	            				}
+
 	        				} else if (nibecontroller.equals("S") &&
 	        						haeMapista(kentat,"Suojaustila (EB101)",false) != -1 &&
 	            					ikkuna.getTietolahde()  == 0) {
@@ -1111,6 +1124,8 @@ public class LogintutkijaOhjain {
 	            			//bt63,VILP meno sähkövastuksen jälkeen            			
 	            			if (haeMapista(kentat,"BT63",false) != -1) {
 	            				bt63.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,"BT63",false)],kerroin));
+	            			} else {
+	            				bt63.add(0);
 	            			}
 	            			
 	            			//bt71
@@ -1160,7 +1175,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				be3.add(0);
 	            			}
-           			
+
 	            			//
 	            			//
 	            			//
@@ -1248,6 +1263,7 @@ public class LogintutkijaOhjain {
 	            			}
 	            			//EP15 END
 	            			
+	            			
 	            			//Calc. Supply
 	            			if (haeMapista(kentat,cs_haku,false) != -1) {
 	            				cs.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cs_haku,false)],kerroin));
@@ -1261,7 +1277,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				dm.add(0);
 	            			}
-
+	            			
 	            			//bf1 Flow
 	            			if (haeMapista(kentat,bf1_haku,false) != -1) {
 		            			bf1.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bf1_haku,false)],kerroin));
@@ -1269,7 +1285,6 @@ public class LogintutkijaOhjain {
 	            				bf1.add(0);
 	            			}
 	            			
-
 	            			//compressor frequency active
 	            			if (haeMapista(kentat,cfa_haku,false) != -1 && cfa_fake==false){
 	            				cfa.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cfa_haku,false)],kerroin));
@@ -1532,9 +1547,9 @@ public class LogintutkijaOhjain {
 	    	        					//lampo_delta_la.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"BT2",bt2_strict)]) - Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,bt3_haku,false)]));
 	    	        				}
 
-//		                			ikkuna.kirjoitaKonsolille("DEBUG " + j + " \n");
-//		                			ikkuna.kirjoitaKonsolille("bt2 haku: " + bt2_haku + " " + bt2_strict + " " + tia_kerroin + " \n");
-//		                			ikkuna.kirjoitaKonsolille("bt3 haku: " + bt3_haku + " " + bt3_strict + " " + tia_haku + " \n");  
+		                			//ikkuna.kirjoitaKonsolille("DEBUG " + j + " \n");
+		                			//ikkuna.kirjoitaKonsolille("bt2 haku: " + bt2_haku + " " + bt2_strict + " " + tia_kerroin + " \n");
+		                			//ikkuna.kirjoitaKonsolille("bt3 haku: " + bt3_haku + " " + bt3_strict + " " + tia_haku + " \n");  
 		                			
 	    	        				lampo_delta_kv.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt2_haku,bt2_strict)],kerroin) - muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt3_haku,bt3_strict)],kerroin));
  	        				
@@ -1772,7 +1787,7 @@ public class LogintutkijaOhjain {
 	    		        			//poistetaan viimeinen aika jottei tule hassuja graafeja
 	    		        			logiaika.remove(logiaika.size()-1);
 	    		            		//Käyrien nayttöä varten
-	    		            		teeKayraTaulukko();
+	    		            		teeKayraTaulukko(); 
 	    		            		if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
 	    		            			ikkuna.getRadioNappulaEP14().setEnabled(true);
 	    		            			ikkuna.getRadioNappulaEP15().setEnabled(true);
@@ -1806,6 +1821,7 @@ public class LogintutkijaOhjain {
     		//VILP labelit
     		if (ikkuna.getLblMLPMalli().getText().contains("VILP") || ikkuna.getLblMLPMalli().getText().contains("PILP")) {
     			ikkuna.getLblLammonKeruu().setText(" ∆ lämmönkeruuilma");
+    			ikkuna.getLblSuos5().setVisible(false);
     		}
     		
     		
@@ -1816,7 +1832,7 @@ public class LogintutkijaOhjain {
     				lamm_sahko, bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa, kaytto_ua,
     				kaytto_la_flm, kaytto_kv_flm);
 
-    		//Käyrien näyttöä varten 
+    		//Käyrien näyttöä varten
     		teeKayraTaulukko();
     		
     		if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345")) {
@@ -1928,13 +1944,23 @@ public class LogintutkijaOhjain {
 					bt2_nolla) {
 				kayra_taulukko.add(2,bt12);
 				kayra_taulukko_nimet.add(2,"meno bt12");
-			} else if (ikkuna.getLblMLPMalli().getText().contains("VILP") && ikkuna.getTietolahde()  == 0) { 
-				kayra_taulukko.add(2,bt63);
-				kayra_taulukko_nimet.add(2,"meno bt63");
-			} else {
-				kayra_taulukko.add(2,bt2);
-				if (ikkuna.getLblMLPMalli().getText().contains("VILP")) {
+			} else if (ikkuna.getLblMLPMalli().getText().contains("VILP") && ikkuna.getTietolahde()  == 0) { //VILP
+				if (ikkuna.getLblMLPMalli().getText().contains("VMM")) { //VMMllä
+					kayra_taulukko.add(2,bt63);
 					kayra_taulukko_nimet.add(2,"meno bt63");
+				} else { //ilman VMMää
+					kayra_taulukko.add(2,bt12);
+					kayra_taulukko_nimet.add(2,"meno bt12");
+				}
+			} else {
+				if (ikkuna.getLblMLPMalli().getText().contains("VILP")) {
+					if (ikkuna.getLblMLPMalli().getText().contains("VMM")) { //VMMllä
+						kayra_taulukko.add(2,bt63);
+						kayra_taulukko_nimet.add(2,"meno bt63");
+					} else { //ilman VMMää
+						kayra_taulukko.add(2,bt12);
+						kayra_taulukko_nimet.add(2,"meno bt12");
+					}
 				} else {
 					kayra_taulukko_nimet.add(2,"meno bt2");
 				}
@@ -1943,7 +1969,7 @@ public class LogintutkijaOhjain {
 			//bt3
 			if ( ikkuna.getLblMLPMalli().getText().contains("VILP") &&  ikkuna.getTietolahde()  == 0) {
 				kayra_taulukko.add(3,eb101_bt3);
-				kayra_taulukko_nimet.add(3,"tulo eb101-bt3");	
+				kayra_taulukko_nimet.add(3,"tulo eb101-bt3");
 			} else {
 				kayra_taulukko.add(3,bt3);
 				if (ikkuna.getLblMLPMalli().getText().contains("VILP")) {
@@ -1952,6 +1978,7 @@ public class LogintutkijaOhjain {
 					kayra_taulukko_nimet.add(3,"tulo bt3");
 				}
 			}
+
 			kayra_taulukko.add(4,bt25);
 			kayra_taulukko_nimet.add(4,"meno bt25");
 			
