@@ -1824,7 +1824,6 @@ public class LogintutkijaOhjain {
     			ikkuna.getLblSuos5().setVisible(false);
     		}
     		
-    		
     		//yhteenvetoikkunan numerot
     		ikkuna.paivitaNumerot(kaytto_la, kaytto_kv, kaytto_le, kv_sahko, mittausvali_ms,
     				kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
@@ -1939,6 +1938,7 @@ public class LogintutkijaOhjain {
     		kayra_taulukko_nimet.add(0,"sisält bt50");
 			kayra_taulukko.add(1,bt1);
 			kayra_taulukko_nimet.add(1,"ulkolt bt1");
+			
 			//bt2
 			if (ikkuna.getLblMLPMalli().getText().equalsIgnoreCase("F1345") ||
 					bt2_nolla) {
@@ -1962,6 +1962,7 @@ public class LogintutkijaOhjain {
 						kayra_taulukko_nimet.add(2,"meno bt12");
 					}
 				} else {
+					kayra_taulukko.add(2,bt2);
 					kayra_taulukko_nimet.add(2,"meno bt2");
 				}
 			}
