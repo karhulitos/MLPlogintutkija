@@ -108,7 +108,7 @@ public class LogintutkijaOhjain {
 	private ArrayList<Integer> cop_la = new ArrayList<Integer>();
 	private ArrayList<Integer> cop_kv = new ArrayList<Integer>();
 	private ArrayList<Integer> relaysPCAbase = new ArrayList<Integer>();
-//	private ArrayList<Integer> ep15_relaysPCAbase = new ArrayList<Integer>();
+	//private ArrayList<Integer> ep15_relaysPCAbase = new ArrayList<Integer>();
 	private ArrayList<Integer> bf1 = new ArrayList<Integer>();
 	private int lastcop=0;
 	//EP15 - 2. kompressori
@@ -1654,8 +1654,8 @@ public class LogintutkijaOhjain {
                 				cop.add(lastcop=laskeCOP(bt12.get(bt12.size()-1),bt3.get(bt3.size()-1),bt14.get(bt14.size()-1),bt17.get(bt17.size()-1),bt10.get(bt10.size()-1),cop_035, cop_045));
                 				//ikkuna.kirjoitaKonsolille(lastcop + "\n");
                 			} else {
-                				//cop.add(0);
-                				cop.add(lastcop);
+                				cop.add(0);
+                				//cop.add(lastcop);
                 				//cop.add((int)(((cop_035+cop_045)/2)*100.0));
                 			}
     
@@ -1751,8 +1751,8 @@ public class LogintutkijaOhjain {
 	            				ep15_cop.add(ep15_lastcop=laskeCOP(ep15_bt12.get(ep15_bt12.size()-1),ep15_bt3.get(ep15_bt3.size()-1),ep15_bt14.get(ep15_bt14.size()-1),ep15_bt17.get(ep15_bt17.size()-1),ep15_bt10.get(ep15_bt10.size()-1),cop_035, cop_045));
 	            				//ikkuna.kirjoitaKonsolille(ep15_lastcop + "\n");
 	            			} else {
-	            				//cop.add(0);
-	            				ep15_cop.add(ep15_lastcop);
+	            				ep15_cop.add(0);
+	            				//ep15_cop.add(ep15_lastcop);
 	            				//cop.add((int)(((cop_035+cop_045)/2)*100.0));
 	            			}
 	            			
@@ -2102,11 +2102,11 @@ public class LogintutkijaOhjain {
     		kayra_taulukko_nimet.add(42,"keruu nopeus EP15");
     		//virtamuuntajat
     		kayra_taulukko.add(43,be1);
-    		kayra_taulukko_nimet.add(43,"be1 L1 A");
+    		kayra_taulukko_nimet.add(43,"L1 A be1");
     		kayra_taulukko.add(44,be2);
-    		kayra_taulukko_nimet.add(44,"be2 L2 A");
+    		kayra_taulukko_nimet.add(44,"L2 A be2");
     		kayra_taulukko.add(45,be3);
-    		kayra_taulukko_nimet.add(45,"be3 L3 A");
+    		kayra_taulukko_nimet.add(45,"L3 A be3");
         }
            	
     	// muunnaCTC
