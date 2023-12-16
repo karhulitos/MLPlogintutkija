@@ -64,6 +64,7 @@ public class LogintutkijaOhjain {
 	//hakutekijät muuttujissa
 	private String kaynti_haku = "Relays PCA-Base";
 	private String tia_haku = "Tot.Int.Add";
+	private String pkt_haku = "Pyydetty komp.taajuus";
 	private int tia_kerroin = 1;
 	private String bt1_haku = "40004";
 	private String bt2_haku = "40008";
@@ -1092,7 +1093,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				bt28.add(0);
 	            			}
-	            			
+
 	            			//bt50, sisälämpö
 	            			if (haeMapista(kentat,bt50_haku,false) != -1) {
 	            				if (muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bt50_haku,false)],kerroin) < -100) {
@@ -1158,7 +1159,7 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				prio.add(0);
 	            			}
-	            			
+
 	            			//virtamuuntajat
 	            			if (haeMapista(kentat,be1_haku,false) != -1) {
 	            				be1.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,be1_haku,false)],1));
@@ -1318,12 +1319,31 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				bt21.add(0);
 	            			}
-
+	            			
 	            			//Relays PCA-Base
 	            			//VILPissä PCA ei kerro tilaa, ainakaan luotettavasti, kannasta luettuna PCA jo kunnossa
 	            			//S-VILP
+	            			//uudessa S-VILP:ssä ei enää Kompressori 1/0 kenttää
 	            			if (ikkuna.getLblMLPMalli().getText().contains("VILP") && ikkuna.getTietolahde() == 0) {
-	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("1")) {
+	            				boolean isSVILPRunning = false;
+	            				if ( haeMapista(kentat,kaynti_haku,false) == -1 ) {
+	            					//uusi S-VILP
+	            					if (haeMapista(kentat,pkt_haku,false) != -1) {
+	            						if (!tiedostot.get(i)[j][haeMapista(kentat,pkt_haku,false)].equalsIgnoreCase("0")) {
+	            							//kompressorin pyyntötaajuus jotain muuta kuin 0
+	            							isSVILPRunning = true;
+	            						}
+		            				}
+	            				} else {
+	            					//vanha S-VILP
+	            					if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("1")) {
+	            						isSVILPRunning = true;
+	            					}
+	            					
+	            				}
+	            				
+	            				//if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("1")) {
+	            				if (isSVILPRunning) {
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30")) { //pca 7
 	            						relaysPCAbase.add(7);
 	            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("20")) { //pca 15
@@ -1331,7 +1351,7 @@ public class LogintutkijaOhjain {
 	            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("10")) { //pca 0
 	            						relaysPCAbase.add(0);
 	            					}
-	            				} else { //kompressori ei käy 
+	            				} else { //kompressori ei käy
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("20")) { //pca 10
 	            						relaysPCAbase.add(10);
 	            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("20")) { //pca 2
@@ -1342,8 +1362,9 @@ public class LogintutkijaOhjain {
 	            				}
 	            			} else if ((nibecontroller.equals("S") &&
 	            					!ikkuna.getLblMLPMalli().getText().contains("VILP") &&
-	            					ikkuna.getTietolahde()  == 0)) { //S-ohjain
-	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("3") || tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("11")) {
+	            					ikkuna.getTietolahde()  == 0)) { //S-ohjain, ei VILP
+	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("3") ||
+	            					tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("11")) {
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30") ||
 	            							tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("40")) { //pca 7
 	            						relaysPCAbase.add(7);
@@ -1395,6 +1416,7 @@ public class LogintutkijaOhjain {
 							 * { ikkuna.kirjoitaKonsolille("Prio EP15: " +
 							 * tiedostot.get(i)[j][haeMapista(kentat,"EB100-EP15 Prio",false)] + "\n"); }
 							 */
+							 
 
 	            			
 	            			// Käyttötilat
