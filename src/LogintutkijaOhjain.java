@@ -1,5 +1,6 @@
 package logintutkija;
 
+import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -39,6 +40,9 @@ public class LogintutkijaOhjain {
 	
 	//analysoi
 	@SuppressWarnings("unused")
+	//graafintausta ja ristikko
+	Color graafinTaustanVari = Color.YELLOW;
+	Color graafinAsteikonVari = Color.BLUE;
 	private static double la, kv, le, sa, sav, sal, ua, la_flm, kv_flm;
 	private static int f1255_cfa_found = 0;
 	private static int samatajat = 1;
@@ -2538,6 +2542,23 @@ public class LogintutkijaOhjain {
 		return ikkuna.kysyTallennusta();
 	}
 	
+	//graafin värit
+    Color getGraafinTaustanVari() {
+		return graafinTaustanVari;
+	}
+	
+	public void setGraafinTaustanVari(Color color) {
+		graafinTaustanVari = color;
+	}
+
+    Color getGraafinAsteikonVari() {
+		return graafinAsteikonVari;
+	}
+	
+	public void setGraafinAsteikonVari(Color color) {
+		graafinAsteikonVari = color;
+	}
+	
 	//db-ikkunan kentät
 	public void setTietokanta_osoite(String t) {
 		ikkuna.setTietokanta_osoite(t);
@@ -2717,6 +2738,40 @@ public class LogintutkijaOhjain {
 	
 	public static long getFreeMemory() {
 	    return Runtime.getRuntime().freeMemory();
+	}
+	
+	public int getLastcop() {
+		return lastcop;
+	}
+	public int getEp15_lastcop() {
+		return ep15_lastcop;
+	}
+	public static double getLa() {
+		return la;
+	}
+	public static double getKv() {
+		return kv;
+	}
+	public static double getLe() {
+		return le;
+	}
+	public static double getSa() {
+		return sa;
+	}
+	public static double getSav() {
+		return sav;
+	}
+	public static double getSal() {
+		return sal;
+	}
+	public static double getUa() {
+		return ua;
+	}
+	public static double getLa_flm() {
+		return la_flm;
+	}
+	public static double getKv_flm() {
+		return kv_flm;
 	}
 	
 	public static String bytesToMegabytes(long bytes) {

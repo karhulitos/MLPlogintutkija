@@ -1,5 +1,6 @@
 package logintutkija;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -22,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //import org.apache.commons.io.FileUtils;
 import org.xml.sax.Attributes;
@@ -110,10 +114,43 @@ public class LogintutkijaMalli {
 						+ "57," //BT14
 						+ "58" //BT17
 						));
+				//käyrien taustaväri sekä ristikko
+				//ohjain.setGraafinTaustanVari(Color.getColor(asetukset.getProperty("graafin_taustan_vari","BLUE")));
+				//ohjain.setGraafinAsteikonVari(Color.getColor(asetukset.getProperty("graafin_asteikon_vari","RED")));
+				//ohjain.setGraafinTaustanVari(Color.RED);
+				//ohjain.setGraafinAsteikonVari(Color.BLUE);
+				
+				//käyrien taustaväri sekä ristikko
+				Color color = null;
+				String str = asetukset.getProperty("graafin_taustan_vari","LIGHT_GRAY");
+				try {
+				    Field field = Class.forName("java.awt.Color").getField(str);
+				    color = (Color)field.get(null);
+				} catch (Exception e) {
+					color = parseRgb(str);
+					if (color == null) {
+						ohjain.kirjoitaKonsolille("Taustan väriä \"" + str + "\" ei löytynyt - käytetään oletusta.\n");
+						color = Color.LIGHT_GRAY; // Not defined tausta
+					}
+				}
+				ohjain.setGraafinTaustanVari(color);
+				
+				str = asetukset.getProperty("graafin_asteikon_vari","WHITE");
+				try {
+				    Field field = Class.forName("java.awt.Color").getField(str);
+				    color = (Color)field.get(null);
+				} catch (Exception e) {
+					color = parseRgb(str);
+					if (color == null) {
+						ohjain.kirjoitaKonsolille("Asteikon väriä \"" + str + "\" ei löytynyt - käytetään oletusta.\n");
+						color = Color.WHITE; // Not defined asteikko
+					}
+				}
+				ohjain.setGraafinAsteikonVari(color);
 			}
 		    catch(FileNotFoundException ex)
 		    {
-		    	ohjain.kirjoitaKonsolille(ex.getMessage() + " yritetään luoda asetustiedosto..");
+		    	ohjain.kirjoitaKonsolille(ex.getMessage() + " yritetään luoda asetustiedosto.. ");
 				//luodaan asetustiedosto
 		    	try {
 		    		//kaikki asetukset mitä tuetaan
@@ -158,6 +195,23 @@ public class LogintutkijaMalli {
 		    return returnValue;
 		}
 		
+		//RGB to color
+		public static Color parseRgb(String input) 
+		{
+		    Pattern c = Pattern.compile("RGB*\\( *([0-9]+), *([0-9]+), *([0-9]+) *\\)");
+		    Matcher m = c.matcher(input);
+
+		    if (m.matches()
+		    		&& Integer.valueOf(m.group(1)) <= 255 &&
+		    		Integer.valueOf(m.group(2)) <= 255 &&
+		    		Integer.valueOf(m.group(3)) <= 255 ) 
+		    {
+		        return new Color(Integer.valueOf(m.group(1)),  // r
+		                         Integer.valueOf(m.group(2)),  // g
+		                         Integer.valueOf(m.group(3))); // b 
+		    }
+		    return null;  
+		}
 		
 		// haeHDD
 		// haetaan lämmitystarveluku Ilmatieteen laitokselta ellei jo ole haettu
@@ -323,6 +377,10 @@ public class LogintutkijaMalli {
 			//CTC mäppi
 			//kts mäppäys asetustiedoston luennasta
 			asetukset.setProperty("CTC","GSi12,0,68,1,7,10,11,14,16,17,18,19,22,50,51,53,55,56,57,58");
+			
+			//Graafin taustan väri
+			asetukset.setProperty("graafin_taustan_vari","LIGHT_GRAY");
+			asetukset.setProperty("graafin_asteikon_vari","WHITE");
 			
 		}
 	

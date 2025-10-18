@@ -17,7 +17,7 @@ public class Logintutkija {
      * LUOKKAMUUTTUJAT
      ******************/
 	private static String sovNimi = "LP logintutkija";
-	private static String sovVersio = "v1.3.21";
+	private static String sovVersio = "v1.3.22";
 	private static String sovNimiVersio = sovNimi + " " + sovVersio;
 	
 	
@@ -38,7 +38,7 @@ public class Logintutkija {
 		
 		//haetaan lämmitystarveluvut
 		//if (malli.haeHDDGet() == false)
-		//	malli.haeHDDGet();
+		//malli.haeHDDGet();
 		
         //Luodaan ikkuna
         final JFrame kehys = new JFrame(sovNimiVersio);

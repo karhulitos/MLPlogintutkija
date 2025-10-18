@@ -1455,13 +1455,16 @@ public class LogintutkijaGUI extends JPanel
         
         renderer.setToolTipGenerator(g);
         final XYPlot plot = chart.getXYPlot();
+		chart.getPlot().setBackgroundPaint( getGraafinTaustanVari() );
+        plot.setRangeGridlinePaint( getGraafinAsteikonVari() );
+        plot.setDomainGridlinePaint( getGraafinAsteikonVari() );
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);        
         final ValueAxis rangeAxis = plot.getRangeAxis();
         rangeAxis.setAutoRange(true);
         //aika akselin fontti pienemmäksi
         Font font = new Font(domain.getLabelFont().getFontName(),Font.PLAIN, 12); 
-        domain.setLabelFont(font);        
+        domain.setLabelFont(font);
         return chart;
     }
     
@@ -1900,6 +1903,15 @@ public class LogintutkijaGUI extends JPanel
     }
     
     //SETTERS & GETTERS
+    //käyrän taustaväri ja ristikko
+    static Color getGraafinTaustanVari() {
+		return ohjain.getGraafinTaustanVari();
+	}
+
+    static Color getGraafinAsteikonVari() {
+		return ohjain.getGraafinAsteikonVari();
+	}
+	
     public void kirjoitaKonsolille (String teksti){
     	konsoli.append(teksti);
     }
