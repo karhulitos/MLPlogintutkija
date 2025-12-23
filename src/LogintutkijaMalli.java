@@ -365,6 +365,9 @@ public class LogintutkijaMalli {
 			asetukset.setProperty("tietokanta_arvo_BE2", "BE2");
 			asetukset.setProperty("tietokanta_arvo_BE3", "BE3");
 			
+			//hälytys
+			asetukset.setProperty("tietokanta_arvo_alarm", "AlarmNumber");
+			
 			//logihakemisto
 			asetukset.setProperty("oletushakemisto", "");
 			
@@ -468,16 +471,17 @@ public class LogintutkijaMalli {
 		                		"bt20 INTEGER," +
 		                		"bt21 INTEGER," +
 		                		"bt71 INTEGER," +
-		                		"ep15_gp2 INTEGER" +
-		                		"be1 INTEGER" +
-		                		"be2 INTEGER" +
-		                		"be3 INTEGER" +
+		                		"ep15_gp2 INTEGER," +
+		                		"be1 INTEGER," +
+		                		"be2 INTEGER," +
+		                		"be3 INTEGER," +
+		                		"alarm INTEGER" +
 		                		")");
 
 		                //tarkastetaan uusien sarakkeiden olemassaolo
 		                DatabaseMetaData md = yhteys.getMetaData();
-		                String[] uudet_sarakkeet = {"tia", "bf1", "cfa", "bt50", "model","ep14_gp1","ep14_gp2","ep15_gp1","bt7","bt51","bt53","bt54","prio","bt20","bt21","bt71","ep15_gp2","be1","be2","be3"};
-		                String[] uudet_sarakkeet_tyyppi = {"INTEGER","INTEGER", "INTEGER", "INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
+		                String[] uudet_sarakkeet = {"tia", "bf1", "cfa", "bt50", "model","ep14_gp1","ep14_gp2","ep15_gp1","bt7","bt51","bt53","bt54","prio","bt20","bt21","bt71","ep15_gp2","be1","be2","be3","alarm"};
+		                String[] uudet_sarakkeet_tyyppi = {"INTEGER","INTEGER", "INTEGER", "INTEGER", "TEXT", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER"};
 		                for (int i=0;uudet_sarakkeet.length>i;i++) {
 		                	ResultSet rs = md.getColumns(null, null, "logit", uudet_sarakkeet[i]);
 							if (!rs.next()) {
@@ -545,6 +549,7 @@ public class LogintutkijaMalli {
 		                				"," + ohjain.getKayra_taulukko().get(43).get(i) +	//be1
 		                				"," + ohjain.getKayra_taulukko().get(44).get(i) +	//be2
 		                				"," + ohjain.getKayra_taulukko().get(45).get(i) +	//be3
+		                				"," + ohjain.getKayra_taulukko().get(46).get(i) +	//alarm
 		                				")");
 		                				//ohjain.kirjoitaKonsolille(sql + "\n");
 		                	} catch (SQLException ex) {
@@ -776,7 +781,7 @@ public class LogintutkijaMalli {
               			kentat.add("0");					//EP15BP8 //idx 26
               			kentat.add(""+(int)(Double.parseDouble(rs.getString(25))/100));		//Tot.Int.Add //idx 27 kenttamappi.put("TotIntAdd", ""+(int)(Double.parseDouble(rs.getString(3))*100));
 	                   	kentat.add(rs.getString(26));		//BF1 //idx 28
-              			kentat.add("0");		  			//alarm  //idx 29
+              			kentat.add(rs.getString(45));		//alarm  //idx 29 //lisätty 2025-12-22
 	                   	kentat.add(rs.getString(16));		//Calc.Supply //idx 30
 	                   	kentat.add(rs.getString(15));		//DM //idx 31
 	                   	kentat.add(rs.getString(5));		//BT1 Avg //idx 32
@@ -798,7 +803,7 @@ public class LogintutkijaMalli {
              			kentat.add(rs.getString(43));		//be2
              			kentat.add(rs.getString(44));		//be3
              			
-             			//ohjain.kirjoitaKonsolille("BE3db: " + rs.getString(44) + "\n");
+             			//ohjain.kirjoitaKonsolille("alarm: " + rs.getString(45) + "\n");
              			
 						tietue = new String[kentat.size()];
 						tietue = kentat.toArray(tietue);
@@ -1018,12 +1023,6 @@ public class LogintutkijaMalli {
            int kenttacheck = kentat.size();
            kentat.clear();
            
-//           tietue = new String[kentat.size()];
-//           tietue = kentat.toArray(tietue);
-//           kaikkidbrivit.add(tietue);
-//           int kenttacheck = kentat.size();
-//           kentat.clear();
-           
        	 try {
        		 //ohjain.kirjoitaKonsolille(tietokanta_url + tietokanta_kayttaja + tietokanta_salasana + "\n");
        		 MysqlDataSource ds = new MysqlDataSource();
@@ -1179,6 +1178,8 @@ public class LogintutkijaMalli {
                			 kenttamappi.put("BE2", ""+(int)(Double.parseDouble(rs.getString(3))));
                		 }  else if (rs.getString(2).equalsIgnoreCase(asetukset.getProperty("tietokanta_arvo_BE3","BE3")) && rs.getString(3) != null) {
                			 kenttamappi.put("BE3", ""+(int)(Double.parseDouble(rs.getString(3))));
+               		 } else if (rs.getString(2).equalsIgnoreCase(asetukset.getProperty("tietokanta_arvo_alarm","AlarmNumber")) && rs.getString(3) != null) {
+               			 kenttamappi.put("alarm", ""+(int)(Double.parseDouble(rs.getString(3))));
                		 } 
                		 
                		 
@@ -1240,6 +1241,9 @@ public class LogintutkijaMalli {
                		 }
                		 if (!kenttamappi.containsKey("BE3")) {
                			 kenttamappi.put("BE3", "0");
+               		 }
+               		 if (!kenttamappi.containsKey("alarm")) {
+               			 kenttamappi.put("alarm", "0");
                		 }
                	 }
                     //ohjain.kirjoitaKonsolille("kenttämappi end\n");
@@ -1339,7 +1343,7 @@ public class LogintutkijaMalli {
 			 kentat.add("0");									//EB100-EP15-BP8
 			 kentat.add(kenttamappi.get("TotIntAdd"));
 			 kentat.add(kenttamappi.get("EP14-BF1"));
-			 kentat.add("0");									//alarm
+			 kentat.add(kenttamappi.get("alarm"));									//alarm
 			 kentat.add(kenttamappi.get("Calc.Supply"));
 			 kentat.add(kenttamappi.get("Degree Minutes"));
 			 kentat.add(kenttamappi.get("BT1"));				//BT1 Avg

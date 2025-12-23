@@ -95,6 +95,7 @@ public class LogintutkijaOhjain {
 	private String be1_haku = "BE1";
 	private String be2_haku = "BE2";
 	private String be3_haku = "BE3";
+	private String alarm_haku = "larm";
 	//käyriä varten
 	private ArrayList<Integer> bt2 = new ArrayList<Integer>();
 	//autoupdatea varten
@@ -158,7 +159,7 @@ public class LogintutkijaOhjain {
 	private static ArrayList<Integer> ep15_lampo_delta_kv = new ArrayList<Integer>();
 	private static ArrayList<Integer> ep15_lampo_delta_keruu = new ArrayList<Integer>();
 	private static ArrayList<Integer> bt50 = new ArrayList<Integer>();
-	//2016-11-06 GP1 ja GP2 tullut lisää oletuslogiin
+	//2016-11-06 GP1 ja GP2 tulleet lisää oletuslogiin
 	private static ArrayList<Integer> gp1 = new ArrayList<Integer>();
 	private static ArrayList<Integer> gp2 = new ArrayList<Integer>();
 	//2017-01-16 EP15 GP1 tullut lisää oletuslogiin
@@ -201,6 +202,9 @@ public class LogintutkijaOhjain {
 	private static ArrayList<Integer> be1 = new ArrayList<Integer>();
 	private static ArrayList<Integer> be2 = new ArrayList<Integer>();
 	private static ArrayList<Integer> be3 = new ArrayList<Integer>();
+	//hälytykset
+	private static ArrayList<Integer> alarm = new ArrayList<Integer>();
+	
 	
 	public LogintutkijaOhjain(final LogintutkijaMalli malli, final LogintutkijaGUI ikkuna) {
 		this.malli = malli;
@@ -478,6 +482,8 @@ public class LogintutkijaOhjain {
         	be1.clear();
         	be2.clear();
         	be3.clear();
+        	//hälytykset
+        	alarm.clear();
         	
         	boolean kompr_kaynnissa = false;
         	boolean ep15_kompr_kaynnissa = false;
@@ -808,8 +814,6 @@ public class LogintutkijaOhjain {
 								tia_kerroin = 100; 
 							}
 						}
-						
-
 						
         				//datarivi
             			if ( (!tiedostot.get(i)[j][0].equalsIgnoreCase("Divisors") &&
@@ -1180,6 +1184,14 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				be3.add(0);
 	            			}
+	            			
+	            			//hälytykset
+	            			if (haeMapista(kentat,alarm_haku,false) != -1) {
+	            				alarm.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,alarm_haku,false)],1));
+	            			} else {
+	            				alarm.add(0);
+	            			}
+	            			
 
 	            			//
 	            			//
@@ -1808,7 +1820,7 @@ public class LogintutkijaOhjain {
 	    		    						kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
 	    		    						lampo_kv, lampo_delta_la, lampo_delta_kv, lampo_delta_keruu, bt67_label, lamm_sahko,
 	    		    						bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa, kaytto_ua, kaytto_la_flm,
-	    		    						kaytto_kv_flm);
+	    		    						kaytto_kv_flm, alarm);
 	    		        			ikkuna.setProgress(100);
 	    		        			//poistetaan viimeinen aika jottei tule hassuja graafeja
 	    		        			logiaika.remove(logiaika.size()-1);
@@ -1855,7 +1867,7 @@ public class LogintutkijaOhjain {
     				kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
     				lampo_kv, lampo_delta_la, lampo_delta_kv, lampo_delta_keruu, bt67_label,
     				lamm_sahko, bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa, kaytto_ua,
-    				kaytto_la_flm, kaytto_kv_flm);
+    				kaytto_la_flm, kaytto_kv_flm, alarm);
 
     		//Käyrien näyttöä varten
     		teeKayraTaulukko();
@@ -1877,7 +1889,7 @@ public class LogintutkijaOhjain {
         						kokaika, ep15_kompr_kaynnistyksia, bt50, bt1, cs,
         						lampo_kv, ep15_lampo_delta_la, ep15_lampo_delta_kv, ep15_lampo_delta_keruu, bt67_label,
         						lamm_sahko, ep15_bt10_min, ep15_bt10_max, ep15_bt11_min, ep15_bt11_max, ep15_cop_la, ep15_cop_kv, cfa, kaytto_ua,
-        						kaytto_la_flm, kaytto_kv_flm);
+        						kaytto_la_flm, kaytto_kv_flm, alarm);
                 		//ei näytetä lisäystä jos F1345
                 		ikkuna.setSal(0);
                 		ikkuna.setSav(0);
@@ -1892,7 +1904,7 @@ public class LogintutkijaOhjain {
         						kokaika, kompr_kaynnistyksia, bt50, bt1, cs,
         						lampo_kv, lampo_delta_la, lampo_delta_kv, lampo_delta_keruu, bt67_label,
         						lamm_sahko, bt10_min, bt10_max, bt11_min, bt11_max, cop_la, cop_kv, cfa,
-        						kaytto_ua, kaytto_la_flm, kaytto_kv_flm);
+        						kaytto_ua, kaytto_la_flm, kaytto_kv_flm, alarm);
                 		ikkuna.naytaGraafi(ikkuna.getLa(), ikkuna.getSal(), ikkuna.getUal(), ikkuna.getLaFlm(), ikkuna.getKvFlm(), ikkuna.getKv(), ikkuna.getSav(), ikkuna.getLe());
                 	}
                 }
@@ -2133,6 +2145,9 @@ public class LogintutkijaOhjain {
     		kayra_taulukko_nimet.add(44,"L2 A be2");
     		kayra_taulukko.add(45,be3);
     		kayra_taulukko_nimet.add(45,"L3 A be3");
+    		//halytys
+    		kayra_taulukko.add(46,alarm);
+    		kayra_taulukko_nimet.add(46,"Hälytys");
         }
            	
     	// muunnaCTC

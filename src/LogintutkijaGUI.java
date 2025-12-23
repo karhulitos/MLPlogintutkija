@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -53,6 +54,7 @@ import javax.swing.text.DefaultCaret;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PiePlot3D;
@@ -94,10 +96,12 @@ public class LogintutkijaGUI extends JPanel
 	//Yhteenvetosivun kentät
 	private JLabel lblMLPMalli = new JLabel("MLP");
 	private JLabel suos5 = new JLabel("-2...-5°C");
+	private static String alarm = "";
 	private static String lokiVersio = "0000";
 	private static String lokiRVersio = "0";
 	private static String aikaAloitus = "Aika";
 	private static String aikaLopetus = "";
+	private JLabel lblAlarm = new JLabel(alarm);
 	private JLabel lblLokiVersio = new JLabel("v" + lokiVersio + "R" + lokiRVersio);
 	private JLabel lblLammonKeruu = new JLabel(" ∆ lämmönkeruupiiri");
 	private static JLabel lblMittausvaliKentta = new JLabel("0 min");
@@ -166,6 +170,9 @@ public class LogintutkijaGUI extends JPanel
 	private static JLabel lblCFAAvgKentta = new JLabel("0 Hz");
 	private static JLabel lblCFAMinKentta = new JLabel("0 Hz");
 	private static JLabel lblCFAMaxKentta = new JLabel("0 Hz");
+	private static int alarm_save = 0;
+	private static ArrayList<Alarm> alarmlist = new ArrayList<Alarm>();
+	private static boolean b2b_alarm =  false;
 	
 	//DB
 	String tietokanta_dbms, tietokanta_osoite, tietokanta_nimi, tietokanta_kayttaja, tietokanta_salasana = "";
@@ -254,7 +261,7 @@ public class LogintutkijaGUI extends JPanel
         //LÄNSIPANEELI
         //west 1 per rivi
         lansipaneeli.add(new JLabel(""));
-        JLabel otsikko = new JLabel("Mitt.väli/versio: ");
+        JLabel otsikko = new JLabel("Mitt.väli/versio/hälytys: ");
         //otsikko.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         lansipaneeli.add(otsikko);
         //jatkuvien logien tarkistusnappula ja sen actionlistener
@@ -320,7 +327,8 @@ public class LogintutkijaGUI extends JPanel
         //4 saraketta per rivi
         keskipaneeli.add(lblMittausvaliKentta);
         keskipaneeli.add(lblLokiVersio);
-        keskipaneeli.add(new JLabel(""));
+        lblAlarm.setForeground(Color.RED);
+        keskipaneeli.add(lblAlarm);
         keskipaneeli.add(new JLabel(""));
 //        keskipaneeli.add(new JLabel("s-teho:"));
         //lisätehon valinta yhteenvetoa varten
@@ -562,7 +570,7 @@ public class LogintutkijaGUI extends JPanel
 			ArrayList<Integer> lampo_pyynti, ArrayList<Integer> lampo_kv, ArrayList<Integer> lampo_delta_la,
 			ArrayList<Integer> lampo_delta_kv, ArrayList<Integer> lampo_delta_keruu, String bt67_label, ArrayList<Integer> lamm_sahko,
 			int bt10_min, int bt10_max, int bt11_min, int bt11_max, ArrayList<Integer> cop_la, ArrayList<Integer> cop_kv,
-			ArrayList<Integer> cfa, int kaytto_ua, int kaytto_la_flm, int kaytto_kv_flm
+			ArrayList<Integer> cfa, int kaytto_ua, int kaytto_la_flm, int kaytto_kv_flm, ArrayList<Integer> alarms
 			) {
 		int mittausvali = (int)(Math.round(mittausvali_ms/1000*10.0)/10.0)*1000;
 
@@ -838,9 +846,20 @@ public class LogintutkijaGUI extends JPanel
 			lblCFAMinKentta.setText("0 Hz");
 			lblCFAMaxKentta.setText("0 Hz");
 		}
+		//Hälytykset
+		if (alarms.size() > 0) {
+			for (int i =0; i<  alarms.size(); i++) {
+				if (alarms.get(i) != 0) {
+				    lblAlarm.setText("" + alarms. get(i));
+				    break;
+			    }
+			}
+		}
 	}
 	
 	public void nollaaNumerot() {
+		//hälytys
+		lblAlarm.setText("");
 		//lokiversio
 		lblLokiVersio.setText("v0000");
 		//piirakka sileäksi
@@ -1340,9 +1359,8 @@ public class LogintutkijaGUI extends JPanel
     //      
     public static ChartPanel teeKayratPaneeli(ArrayList<String> kayrat_taulukko_nimet, final ArrayList<ArrayList<Integer>> kayrat_taulukko, ArrayList<GregorianCalendar> logiaika) {
         //super(title);
-        //final XYDataset dataset = teeTietoJoukko(kayrat_taulukko_nimet, kayrat_taulukko, logiaika);
     	final XYDataset dataset = teeTietoJoukko(kayrat_taulukko_nimet, kayrat_taulukko, logiaika);
-        JFreeChart chart = teeKayrat(dataset);
+        final JFreeChart chart = teeKayrat(dataset);
         final ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(800, 500));
         chartPanel.setMouseZoomable(true, true);
@@ -1365,7 +1383,7 @@ public class LogintutkijaGUI extends JPanel
             false
         );
         final XYItemRenderer renderer = chart.getXYPlot().getRenderer();
-        final StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
+        final StandardXYToolTipGenerator generator = new StandardXYToolTipGenerator(
             StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
             new SimpleDateFormat("yyyy-MM-dd HH:mm"), new DecimalFormat("0.00")
         );
@@ -1453,11 +1471,37 @@ public class LogintutkijaGUI extends JPanel
         renderer.setSeriesStroke(7, wideLine);
         //renderer.setSeriesStroke(23, wideLine);
         
-        renderer.setToolTipGenerator(g);
+        renderer.setToolTipGenerator(generator);
         final XYPlot plot = chart.getXYPlot();
-		chart.getPlot().setBackgroundPaint( getGraafinTaustanVari() );
+		chart.getPlot().setBackgroundPaint(getGraafinTaustanVari());
         plot.setRangeGridlinePaint( getGraafinAsteikonVari() );
         plot.setDomainGridlinePaint( getGraafinAsteikonVari() );
+        
+        int start_angle = 250;
+        int end_angle = 290;
+        
+        if (b2b_alarm) {
+        	start_angle = 290;
+        	end_angle = 250;
+        }
+
+        for( Alarm a : alarmlist) {
+        	//konsoli.append("häly: " + a.getAlarmnr() + " alku: " + a.getAlarm_start_item().getPeriod().toString() + "\n");
+        	//hälytys alkaa	
+			double xs = a.getAlarm_start_item().getPeriod().getFirstMillisecond();
+			double ys = a.getAlarm_start_item().getValue().doubleValue();
+			XYPointerAnnotation alarm_start = new XYPointerAnnotation(a.getAlarmnr() + ">" , xs, ys, Math.toRadians(start_angle));
+			alarm_start.setLabelOffset(10.0);
+			plot.addAnnotation(alarm_start);
+			
+			//hälytys loppuu
+			double xe = a.getAlarm_end_item().getPeriod().getFirstMillisecond();
+			double ye = a.getAlarm_end_item().getValue().doubleValue();
+			XYPointerAnnotation alarm_end = new XYPointerAnnotation("<" + a.getAlarmnr(), xe, ye, Math.toRadians(end_angle));
+			alarm_end.setLabelOffset(10.0);
+			plot.addAnnotation(alarm_end);
+        }
+
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);        
         final ValueAxis rangeAxis = plot.getRangeAxis();
@@ -1475,7 +1519,7 @@ public class LogintutkijaGUI extends JPanel
 	private static XYDataset teeTietoJoukko(ArrayList<String> kayra_taulukko_nimet, ArrayList<ArrayList<Integer>> kayra_taulukko, ArrayList<GregorianCalendar> logiaika) {
     		TimeSeries sisalt = new TimeSeries(kayra_taulukko_nimet.get(0), Second.class);
 	        TimeSeries ulkolt = new TimeSeries(kayra_taulukko_nimet.get(1), Second.class);
-	        TimeSeries bt2 = new TimeSeries(kayra_taulukko_nimet.get(2), Second.class);
+	        TimeSeries bt2 = new TimeSeries(kayra_taulukko_nimet.get(2), Second.class);        
 	        TimeSeries bt3 = new TimeSeries(kayra_taulukko_nimet.get(3), Second.class);
 	        TimeSeries bt25 = new TimeSeries(kayra_taulukko_nimet.get(4), Second.class);
 	        TimeSeries bt10 = new TimeSeries(kayra_taulukko_nimet.get(5), Second.class);
@@ -1530,8 +1574,15 @@ public class LogintutkijaGUI extends JPanel
 		    TimeSeries be1 = new TimeSeries(kayra_taulukko_nimet.get(43), Second.class);
 		    TimeSeries be2 = new TimeSeries(kayra_taulukko_nimet.get(44), Second.class);
 		    TimeSeries be3 = new TimeSeries(kayra_taulukko_nimet.get(45), Second.class);
+		    //hälytykset
+		    //TimeSeries alarm = new TimeSeries(kayra_taulukko_nimet.get(46), Second.class);
 
         try {
+        	//new alarm entry
+        	Alarm a = null;
+        	alarmlist.clear();
+        	alarm_save = 0;
+        	b2b_alarm = false;
         	 	
 	        for (int j=0; j<logiaika.size();j++) {
 	        	sisalt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(0).get(j))/10);
@@ -1590,10 +1641,42 @@ public class LogintutkijaGUI extends JPanel
 	        	be1.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(43).get(j)));
 	        	be2.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(44).get(j)));
 	        	be3.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(45).get(j)));
+	        	//hälytys - index 46 - käytetään BT2:n viitteenä näyttämään virheet
+	            //etsi mahdolliset virheet
+	            if (kayra_taulukko.get(46).get(j) > 0 && alarm_save == 0 && alarm_save != kayra_taulukko.get(46).get(j)) {
+	            	//konsoli.append("Uusi! Oli: " + alarm_save + ", on: " + kayra_taulukko.get(46).get(j) +  ".\n");
+	            	a = new Alarm();
+	            	//alarm start
+	            	alarm_save = kayra_taulukko.get(46).get(j);
+	            	a.setAlarmnr(alarm_save);
+	            	if (j > 0) { //eka rivi pois - jos hälytys jatkuu edelliseltä logilta, ei kirjata alkua
+	            		a.setAlarm_start_item(bt2.getDataItem(j));
+	            	}
+	            } else if (kayra_taulukko.get(46).get(j) != alarm_save) { //hälytys muuttui, otetaan loppuaika ylös
+	            	//konsoli.append("Muuttui! Oli: " + alarm_save + ", on: " + kayra_taulukko.get(46).get(j) +  ".\n");
+	            	//alarm end
+	            	a.setAlarm_end_item(bt2.getDataItem(j));
+	            	alarm_save = kayra_taulukko.get(46).get(j);
+	            	//add to alarm list
+	            	alarmlist.add(a);
+	            	//jos uusi häly, luodaan uusi objekti
+	            	if (kayra_taulukko.get(46).get(j) != 0) {
+	            		//peräkkäinen hälytys
+	            		b2b_alarm = true;
+		            	//new alarm start
+		            	a = new Alarm();
+		            	alarm_save = kayra_taulukko.get(46).get(j);
+		            	a.setAlarmnr(alarm_save);
+		            	a.setAlarm_start_item(bt2.getDataItem(j));
+	            	}
+	            }
+	            //viimeinen ja hälytys jatkuu
+	            if (j+1 == kayra_taulukko.get(46).size() && kayra_taulukko.get(46).get(j) == alarm_save && alarm_save != 0) {
+	            	//konsoli.append("Viimeinen rivi: " + alarm_save + ".\n");
+	            	alarmlist.add(a);
+	            }
 	        }
-        }
-        
-        
+        }       
         catch (Exception e) {
         	konsoli.append("Trendien datavirhe: " + e.getMessage());
         }
@@ -1820,12 +1903,43 @@ public class LogintutkijaGUI extends JPanel
 		                    		panel22.add(chkbox);
 		                    	}
 			                } else {
-		                    	if (i!=38) { //prioriteetti = 38
+		                    	if (i!=38 && i!=46) { //prioriteetti = 38, hälytykset = 46
 		                    		panel23.add(chkbox);
 		                    	}
 		                    }
 		                }
             	  }
+                
+                //hälytykset trendin päälle
+                final JCheckBox chkbox = new JCheckBox("hälytykset");
+                panel23.add(chkbox);
+                
+            	@SuppressWarnings("unchecked")
+            	List<XYPointerAnnotation> annotations = kayrat.getChart().getXYPlot().getAnnotations();
+            	if ( annotations.size() > 0 ) {
+            		//jos hälytyksiä, aseta valintanappula päälle
+            		chkbox.setSelected(true);
+            	}
+            	
+                //checkboksin kuuntelija
+                chkbox.addItemListener(new ItemListener() {
+                	@Override				
+                    public void itemStateChanged(ItemEvent e) {
+                        //System.out.println(e.getStateChange() == ItemEvent.SELECTED
+                        //		? "SELECTED" : "DESELECTED");
+
+                    	if (!chkbox.isSelected()){
+                    		//poistetaan annotaatiot (hälytykset) kuvaajasta
+                    		kayrat.getChart().getXYPlot().clearAnnotations();
+                    	}
+                    	else if (chkbox.isSelected()){
+                    		for( XYPointerAnnotation a : annotations) {
+                    			//annotaatiot (hälytykset) takaisin
+                    			kayrat.getChart().getXYPlot().addAnnotation(a);
+                    		}
+                    	}
+                    }
+                });
                 
                 panel2.add(panel21);
                 if (lblMLPMalli.getText().equalsIgnoreCase("F1345")) {
