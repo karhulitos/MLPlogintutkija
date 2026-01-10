@@ -758,6 +758,7 @@ public class LogintutkijaOhjain {
 	        					keruu_ulos_haku = "EP14-BT11"; //lämmönvaihdin "keruu meno" kannassa BT16
 							}
 						}
+						
 						if (ikkuna.getLblMLPMalli().getText().contains("PILP")) { //PILP
 							if (ikkuna.getTietolahde()  == 0) {
         					keruu_sisaan_haku = "BT20"; //poisto
@@ -767,6 +768,7 @@ public class LogintutkijaOhjain {
 	        					keruu_ulos_haku = "EP14-BT11"; //jäteilma kannassa BT21
 							}
 						}
+						
 						if (nibecontroller.equalsIgnoreCase("S")) { //S-ohjain
 							if (ikkuna.getTietolahde()  == 0) {
 	        					bt1_haku = "(BT1)";
@@ -790,7 +792,7 @@ public class LogintutkijaOhjain {
 	        					kerroin=10;
 	        					gpkerroin=1;
 	        					tia_kerroin=100;
-	        		        	if ( ! ikkuna.getLblMLPMalli().getText().contains("VILP")) {
+	        		        	if ( ! ikkuna.getLblMLPMalli().getText().contains("VILP")) { //erotellaanko tässä normi S-ohjain MLP? Miksi ASB?
 	            		        	cfa_haku = "Kompressorin taajuus, nykyinen [Hz]";
 	            		        	kaynti_haku = "ASB";
 	            					keruu_sisaan_haku = "BT10";
@@ -1358,7 +1360,6 @@ public class LogintutkijaOhjain {
 	            					
 	            				}
 	            				
-	            				//if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("1")) {
 	            				if (isSVILPRunning) {
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30")) { //pca 7
 	            						relaysPCAbase.add(7);
@@ -1378,17 +1379,19 @@ public class LogintutkijaOhjain {
 	            				}
 	            			} else if ((nibecontroller.equals("S") &&
 	            					!ikkuna.getLblMLPMalli().getText().contains("VILP") &&
-	            					ikkuna.getTietolahde()  == 0)) { //S-ohjain, ei VILP
+	            					ikkuna.getTietolahde()  == 0)) { //S-ohjain, ei VILP, ei DB
 	            				if (tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("3") ||
-	            					tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("11")) {
-	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30") ||
-	            							tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("40")) { //pca 7
-	            						relaysPCAbase.add(7);
-	            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("20")) { //pca 15
-	            						relaysPCAbase.add(15);
-	            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("10")) { //pca 0
-	            						relaysPCAbase.add(0);
-	            					}
+	            					tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("11") ||
+	            					tiedostot.get(i)[j][haeMapista(kentat,kaynti_haku,false)].equalsIgnoreCase("0") //ensihoitaja1-case - katsotaan mitä rikkoitui matkalla
+	            						) {
+		            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("30") ||
+		            							tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("40")) { //pca 7
+		            						relaysPCAbase.add(7);
+		            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("20")) { //pca 15
+		            						relaysPCAbase.add(15);
+		            					} else if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("10")) { //pca 0
+		            						relaysPCAbase.add(0);
+		            					}
 	            				} else { //kompressori ei käy -mistä tiedän S-sarjalaisessa?
 	            					if (tiedostot.get(i)[j][haeMapista(kentat,"Prio",false)].equalsIgnoreCase("20")) { //pca 10
 	            						relaysPCAbase.add(10);
