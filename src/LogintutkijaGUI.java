@@ -1851,7 +1851,9 @@ public class LogintutkijaGUI extends JPanel
             	   final int suure = i;
 		           final JCheckBox chkbox = new JCheckBox(ohjain.getKayra_taulukko_nimet().get(i));
 		                if (i >= 0 && i < 7) {
-		                	if (Math.abs(Collections.max(ohjain.getKayra_taulukko().get(i)))>0) {
+		                	if (Math.abs(Collections.min(ohjain.getKayra_taulukko().get(i)))!= 0 ||
+		                			Math.abs(Collections.max(ohjain.getKayra_taulukko().get(i)))!= 0
+		                			) { //case neo_76
 		                		chkbox.setSelected(true);
 		                	} else {
 		                		(kayrat.getChart().getXYPlot().getRendererForDataset(kayrat.getChart().getXYPlot().getDataset(0))).setSeriesVisible(i, false, true);
