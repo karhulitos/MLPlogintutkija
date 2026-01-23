@@ -54,6 +54,8 @@ import javax.swing.text.DefaultCaret;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYAnnotation;
+import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.annotations.XYPointerAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
@@ -173,6 +175,9 @@ public class LogintutkijaGUI extends JPanel
 	private static int alarm_save = 0;
 	private static ArrayList<Alarm> alarmlist = new ArrayList<Alarm>();
 	private static boolean b2b_alarm =  false;
+	private static int process_save = 0;
+	private static ArrayList<Process> processlist = new ArrayList<Process>();
+	private static Double bt2_max = 0.0;
 	
 	//DB
 	String tietokanta_dbms, tietokanta_osoite, tietokanta_nimi, tietokanta_kayttaja, tietokanta_salasana = "";
@@ -1477,6 +1482,8 @@ public class LogintutkijaGUI extends JPanel
         plot.setRangeGridlinePaint( getGraafinAsteikonVari() );
         plot.setDomainGridlinePaint( getGraafinAsteikonVari() );
         
+
+        
         int start_angle = 250;
         int end_angle = 290;
         
@@ -1501,7 +1508,7 @@ public class LogintutkijaGUI extends JPanel
 			alarm_end.setLabelOffset(10.0);
 			plot.addAnnotation(alarm_end);
         }
-
+        
         ValueAxis domain = plot.getDomainAxis();
         domain.setAutoRange(true);        
         final ValueAxis rangeAxis = plot.getRangeAxis();
@@ -1583,7 +1590,12 @@ public class LogintutkijaGUI extends JPanel
         	alarmlist.clear();
         	alarm_save = 0;
         	b2b_alarm = false;
-        	 	
+        	
+        	//new process entry
+        	Process p = null;
+        	processlist.clear();
+        	process_save = 0;
+        	
 	        for (int j=0; j<logiaika.size();j++) {
 	        	sisalt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(0).get(j))/10);
 	        	ulkolt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(1).get(j))/10);
@@ -1641,6 +1653,73 @@ public class LogintutkijaGUI extends JPanel
 	        	be1.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(43).get(j)));
 	        	be2.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(44).get(j)));
 	        	be3.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(45).get(j)));
+	        	
+	        	
+	        	//käynti - Prio 38 PCA 24
+	        	//haetaan isoin bt2
+	        	if (bt2.getDataItem(j).getValue().doubleValue() > bt2_max) {
+	        		bt2_max = bt2.getDataItem(j).getValue().doubleValue();
+	        		//konsoli.append("Uusi! BT2: " + bt2_max + ".\n");
+	        	}
+	        	
+	        	
+	        	//yhdistetään PCA ja Prio
+	        	int pcaprio = 0;
+	        	//konsoli.append("Prio: " + kayra_taulukko.get(38).get(j) + " pca: " + kayra_taulukko.get(24).get(j) + ".\n");
+	        	if (kayra_taulukko.get(38).get(j) < 10) { //talologgerissa 0, 1 tai 2 jostain syystä
+	        		switch(kayra_taulukko.get(24).get(j)) { //pca
+		  			  case 7:
+		  				pcaprio = 30; //Lämmitys
+		  				break;
+		  			  case 15:
+		  				pcaprio = 20; //KV
+		  			    break;
+		  			  case 2:
+		  				pcaprio = 10; //kiertovesipumppu pyörii
+		  			    break;
+		  			  case 0:
+		  				pcaprio = 10; //lepo
+		  			    break;
+		  			  default:
+		  				pcaprio = 0; //ei pitäisi tapahtua?
+	        		}
+	  			} else {
+	  				pcaprio = kayra_taulukko.get(38).get(j);
+	  			}
+	        	
+	        	//konsoli.append("Prio: " + kayra_taulukko.get(38).get(j) + " PCA: " + kayra_taulukko.get(24).get(j) + ".\n");
+	        	//konsoli.append("PCAPrio: " + pcaprio + ".\n");
+	        	
+	        	
+	            if (pcaprio > 0 && process_save == 0 && process_save != pcaprio) {
+	            	//konsoli.append("Uusi! Oli: " + process_save + ", on: " + pcaprio +  ".\n");
+	            	p = new Process();
+	            	//process start
+	            	process_save = pcaprio;
+	            	p.setProcess(process_save);
+	            	p.setProcess_start_item(prio.getDataItem(j));
+	            } else if (pcaprio != process_save) { //käynti muuttui, otetaan loppuaika ylös
+	            	//konsoli.append("Muuttui! Oli: " + process_save + ", on: " + pcaprio +  ".\n");
+	            	//alarm end
+	            	p.setProcess_end_item(prio.getDataItem(j));
+	            	process_save = pcaprio;
+	            	//add to alarm list
+	            	processlist.add(p);
+	            	//jos uusi prosessi, luodaan uusi objekti
+	            	if (pcaprio != 0) {
+		            	//new process start
+		            	p = new Process();
+		            	process_save = pcaprio;
+		            	p.setProcess(process_save);
+		            	p.setProcess_start_item(prio.getDataItem(j));
+	            	}
+	            }
+	            //viimeinen ja prosessi jatkuu
+	            if (j+1 == kayra_taulukko.get(38).size() && pcaprio == process_save && process_save != 0) {
+	            	//konsoli.append("Viimeinen rivi: " + process_save + ".\n");
+	            	processlist.add(p);
+	            }
+	        	
 	        	//hälytys - index 46 - käytetään BT2:n viitteenä näyttämään virheet
 	            //etsi mahdolliset virheet
 	            if (kayra_taulukko.get(46).get(j) > 0 && alarm_save == 0 && alarm_save != kayra_taulukko.get(46).get(j)) {
@@ -1913,36 +1992,40 @@ public class LogintutkijaGUI extends JPanel
             	  }
                 
                 //hälytykset trendin päälle
-                final JCheckBox chkbox = new JCheckBox("hälytykset");
-                panel23.add(chkbox);
+                final JCheckBox cb_alarm = new JCheckBox("hälyt ja prosessi");
+                panel23.add(cb_alarm);
                 
             	@SuppressWarnings("unchecked")
-            	List<XYPointerAnnotation> annotations = kayrat.getChart().getXYPlot().getAnnotations();
-            	if ( annotations.size() > 0 ) {
+            	List<XYAnnotation> annotations = kayrat.getChart().getXYPlot().getAnnotations();
+            	if ( alarmlist.size() > 0 ) {
             		//jos hälytyksiä, aseta valintanappula päälle
-            		chkbox.setSelected(true);
+            		cb_alarm.setSelected(true);
+            		//piirretään samalla prosessin viivat
+            		prosessiViivat(kayrat.getChart().getXYPlot(), processlist);
             	}
             	
                 //checkboksin kuuntelija
-                chkbox.addItemListener(new ItemListener() {
+            	cb_alarm.addItemListener(new ItemListener() {
                 	@Override				
                     public void itemStateChanged(ItemEvent e) {
                         //System.out.println(e.getStateChange() == ItemEvent.SELECTED
                         //		? "SELECTED" : "DESELECTED");
 
-                    	if (!chkbox.isSelected()){
+                    	if (!cb_alarm.isSelected()){
                     		//poistetaan annotaatiot (hälytykset) kuvaajasta
                     		kayrat.getChart().getXYPlot().clearAnnotations();
                     	}
-                    	else if (chkbox.isSelected()){
-                    		for( XYPointerAnnotation a : annotations) {
+                    	else if (cb_alarm.isSelected()){
+                    		for( XYAnnotation a : annotations) {
                     			//annotaatiot (hälytykset) takaisin
                     			kayrat.getChart().getXYPlot().addAnnotation(a);
                     		}
+                    		//piirretään samalla prosessin viivat
+                    		prosessiViivat(kayrat.getChart().getXYPlot(), processlist);
                     	}
                     }
                 });
-                
+            	
                 panel2.add(panel21);
                 if (lblMLPMalli.getText().equalsIgnoreCase("F1345")) {
                 	panel2.add(panel22);
@@ -1998,6 +2081,42 @@ public class LogintutkijaGUI extends JPanel
             }
         });
 
+    }
+    
+    // prioMarkers
+    // piirretään prosessinvaihtoviivat
+    //   
+    public void prosessiViivat(XYPlot plot, List<Process> processlist) {
+    	//konsoli.append("Prosessin viivat.\n");
+        //prosessin viivat
+        BasicStroke stroke = new BasicStroke(0.4f);
+        for( Process p : processlist) {
+        	
+        	//prosessi alkaa	
+			double xs = p.getProcess_start_item().getPeriod().getFirstMillisecond();
+			int prio = p.getProcess();
+			//konsoli.append("prio: " + prio + " alku: " + p.getProcess_start_item().getPeriod().toString() + "\n");
+			
+			Color color = Color.GRAY;
+			switch(prio) {
+			  case 10:
+				  color = new Color(0, 153, 0);//Color.GREEN;
+				break;
+			  case 20:
+				  color = Color.BLUE;
+			    break;
+			  case 30:
+				  color = Color.RED;
+			    break;
+			  case 40:
+				  color = Color.MAGENTA;
+			    break;
+			  default:
+				  color = Color.GRAY;
+			}
+	        plot.addAnnotation(new XYLineAnnotation(
+	        		xs, -10, xs, (bt2_max + (5 - bt2_max % 5)), stroke, color));
+        }
     }
     
     // kysyTallennusta

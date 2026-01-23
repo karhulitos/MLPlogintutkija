@@ -731,7 +731,7 @@ public class LogintutkijaOhjain {
 	    						version = Integer.parseInt(tiedostot.get(i)[j][2]); //version = 3. kenttä	    						
 	        					if (version < 3105 && ikkuna.getTietolahde() == 0) {
 	        						//lopetetaan kun versio 1768 löytyi
-	            					ikkuna.kirjoitaKonsolille(version + " -versio löydetty. Logintutkija tukee vain 3105 ja tuoreempia logeja. Toimii tai ei toimi.\n");
+	            					ikkuna.kirjoitaKonsolille(version + " -versio löydetty. Logintutkija tukee vain 3105 ja tuoreampia logeja. Toimii tai ei toimi.\n");
 	            					keruu_sisaan_haku = "BT10";
 	            					keruu_ulos_haku = "BT11";
 	        					}
