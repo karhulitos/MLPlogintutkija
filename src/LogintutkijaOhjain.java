@@ -636,7 +636,6 @@ public class LogintutkijaOhjain {
             				continue rivi;
             			}
 
-            			
             			if (tiedostot.get(i)[0].length > tiedostot.get(i)[j].length || Arrays.toString(tiedostot.get(i)[j]).contains("NULL")){
             				if (ikkuna.getTietolahde() == 1) {
             					ikkuna.kirjoitaKonsolille("Vajaa tietue (" + (j+1) + ") - ei huomioida.\n");
@@ -736,15 +735,21 @@ public class LogintutkijaOhjain {
 	            					keruu_ulos_haku = "BT11";
 	        					}
 	    					}
-							//1126 hack
+	    					
+							//1226 hack
 							if (haeMapista(kentat,"version",false) != -1) {
-	    						if (tiedostot.get(i)[j][haeMapista(kentat,"version",false)].equals("3111")) {
+	    						if (tiedostot.get(i)[j][haeMapista(kentat,"version",false)].equals("3111") ||
+	    								tiedostot.get(i)[j][haeMapista(kentat,"version",false)].equals("1199")
+	    								){
 	    							ikkuna.getLblMLPMalli().setText(nibecontroller + "1226");
+	    							if (tiedostot.get(i)[j][haeMapista(kentat,"version",false)].equals("1199")) {
+	    								kaynti_haku = "RELAYS PCA BASE";
+	    							}
 	    						}
 							}
 						}
 						
-						
+    						
 						//säädöt per malli
 						//
 						//
@@ -884,8 +889,8 @@ public class LogintutkijaOhjain {
 	            				logiaika.add(new GregorianCalendar(vuosi, kuukausi, paiva, tunti, minuutti, sekunti));
 	            				edellinen_logiaika = new GregorianCalendar(vuosi, kuukausi, paiva, tunti, minuutti, sekunti);
 	            				samatajat=1;
-	            			}            				
-
+	            			}
+	            			
 	            			//version
 	            			if (!ikkuna.getLblMLPMalli().getText().contains("CTC")) {
 		    	        		if (lokiVersio.equalsIgnoreCase("0000")) {
@@ -918,7 +923,7 @@ public class LogintutkijaOhjain {
 		    	        			continue rivi;
 		    	        		}
 	            			}
-
+	            			
 	    	        		//r-version
 	    	        		if (haeMapista(kentat,"R-version",false) != -1){
 	    	        			if (haeMapista(kentat,"43001",false) != -1){ //version=43001
@@ -930,7 +935,7 @@ public class LogintutkijaOhjain {
 	    	        			}
 	    	        			lokiRVersio=tiedostot.get(i)[j][haeMapista(kentat,"R-version",false)];
 	    	        		}
- 	
+	            			
 	            			//kirjoitetaan aloitusaika Käyrät-ikkunaan
 	            			if (aloitusaika != true) {
 	            				LogintutkijaGUI.setAikaAloitus(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(logiaika.get(0).getTime()));
@@ -1228,31 +1233,35 @@ public class LogintutkijaOhjain {
 	            			} else {
 	            				ep15_bt3.add(0);
 	            			}
-
+	            			
 	            			//EP15 BT10
 	            			if (haeMapista(kentat,"EP15-BT10",false) != -1) {
 	            				ep15_bt10.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT10",false)]));
 	            			} else {
 	            				ep15_bt10.add(0);
 	            			}
+	            			
 	            			//EP15 BT11
 	            			if (haeMapista(kentat,"EP15-BT11",false) != -1) {
 	            				ep15_bt11.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT11",false)]));
 	            			} else {
 	            				ep15_bt11.add(0);
 	            			}
+	            			
 	            			//EP15 BT12
 	            			if (haeMapista(kentat,"EP15-BT12",false) != -1) {
 	            				ep15_bt12.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT12",false)]));
 	            			} else {
 	            				ep15_bt12.add(0);
 	            			}
+	            			
 	            			//EP15 BT14
 	            			if (haeMapista(kentat,"EP15-BT14",false) != -1) {
 	            				ep15_bt14.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT14",false)]));
 	            			} else {
 	            				ep15_bt14.add(0);
 	            			}
+	            			
 	            			//EP15 BT14
 	            			if (haeMapista(kentat,"EP15-BT17",false) != -1) {
 	            				ep15_bt17.add(Integer.parseInt(tiedostot.get(i)[j][haeMapista(kentat,"EP15-BT17",false)]));
@@ -1282,21 +1291,20 @@ public class LogintutkijaOhjain {
 	            			}
 	            			//EP15 END
 	            			
-	            			
 	            			//Calc. Supply
 	            			if (haeMapista(kentat,cs_haku,false) != -1) {
 	            				cs.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,cs_haku,false)],kerroin));
 	            			} else {
 	            				cs.add(0);
 	            			}
-           			
+	            			
 	            			//Degree Minutes
 	            			if (haeMapista(kentat,dm_haku,false) != -1) {
 	            				dm.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,dm_haku,false)],kerroin));
 	            			} else {
 	            				dm.add(0);
 	            			}
-	            			
+
 	            			//bf1 Flow
 	            			if (haeMapista(kentat,bf1_haku,false) != -1) {
 		            			bf1.add(muunnaInt(tiedostot.get(i)[j][haeMapista(kentat,bf1_haku,false)],kerroin));
@@ -2459,13 +2467,13 @@ public class LogintutkijaOhjain {
     	    if (strict) {			
 	    	values =
 	    	    map.keySet().stream()
-	    	       .filter(key -> key.equals(hakuehto))
+	    	       .filter(key -> key.equalsIgnoreCase(hakuehto))
 	    	       .map(map::get)
 	    	       .collect(Collectors.toList());
     	    } else {
     	    	values =
     		    	    map.keySet().stream()
-    		    	       .filter(key -> key.contains(hakuehto))
+    		    	       .filter(key -> key.toLowerCase().contains(hakuehto.toLowerCase()))
     		    	       .map(map::get)
     		    	       .collect(Collectors.toList());
     	    }
