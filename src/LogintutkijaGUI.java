@@ -1524,79 +1524,80 @@ public class LogintutkijaGUI extends JPanel
     //   
     @SuppressWarnings("deprecation")
 	private static XYDataset teeTietoJoukko(ArrayList<String> kayra_taulukko_nimet, ArrayList<ArrayList<Integer>> kayra_taulukko, ArrayList<GregorianCalendar> logiaika) {
-    		TimeSeries sisalt = new TimeSeries(kayra_taulukko_nimet.get(0), Second.class);
-	        TimeSeries ulkolt = new TimeSeries(kayra_taulukko_nimet.get(1), Second.class);
-	        TimeSeries bt2 = new TimeSeries(kayra_taulukko_nimet.get(2), Second.class);        
-	        TimeSeries bt3 = new TimeSeries(kayra_taulukko_nimet.get(3), Second.class);
-	        TimeSeries bt25 = new TimeSeries(kayra_taulukko_nimet.get(4), Second.class);
-	        TimeSeries bt10 = new TimeSeries(kayra_taulukko_nimet.get(5), Second.class);
-	        TimeSeries bt11 = new TimeSeries(kayra_taulukko_nimet.get(6), Second.class);
-	        TimeSeries bt12 = new TimeSeries(kayra_taulukko_nimet.get(7), Second.class);
-	        TimeSeries bt14 = new TimeSeries(kayra_taulukko_nimet.get(8), Second.class);
-	        TimeSeries bt17 = new TimeSeries(kayra_taulukko_nimet.get(9), Second.class);
-	        TimeSeries dm = new TimeSeries(kayra_taulukko_nimet.get(10), Second.class);
-	        TimeSeries cs = new TimeSeries(kayra_taulukko_nimet.get(11), Second.class);
-	        TimeSeries dtla = new TimeSeries(kayra_taulukko_nimet.get(12), Second.class);
-	        TimeSeries dtbr = new TimeSeries(kayra_taulukko_nimet.get(13), Second.class);
-	        TimeSeries cop = new TimeSeries(kayra_taulukko_nimet.get(14), Second.class);
-	        //EP15
-	        TimeSeries ep15_bt3 = new TimeSeries(kayra_taulukko_nimet.get(15), Second.class);
-		    TimeSeries ep15_bt10 = new TimeSeries(kayra_taulukko_nimet.get(16), Second.class);
-		    TimeSeries ep15_bt11 = new TimeSeries(kayra_taulukko_nimet.get(17), Second.class);
-		    TimeSeries ep15_bt12 = new TimeSeries(kayra_taulukko_nimet.get(18), Second.class);
-		    TimeSeries ep15_bt14 = new TimeSeries(kayra_taulukko_nimet.get(19), Second.class);
-		    TimeSeries ep15_bt17 = new TimeSeries(kayra_taulukko_nimet.get(20), Second.class);
-		    TimeSeries ep15_dtla = new TimeSeries(kayra_taulukko_nimet.get(21), Second.class);
-		    TimeSeries ep15_dtbr = new TimeSeries(kayra_taulukko_nimet.get(22), Second.class);
-		    TimeSeries ep15_cop = new TimeSeries(kayra_taulukko_nimet.get(23), Second.class);
-		    //käynti
-		    TimeSeries pca = new TimeSeries(kayra_taulukko_nimet.get(24), Second.class);
-		    TimeSeries ep15_prio = new TimeSeries(kayra_taulukko_nimet.get(25), Second.class);
-		    //KV
-		    TimeSeries bt7 = new TimeSeries(kayra_taulukko_nimet.get(26), Second.class);
-		    TimeSeries bt6 = new TimeSeries(kayra_taulukko_nimet.get(27), Second.class);
-		    //Suorasähkö
-		    TimeSeries kw_sahko = new TimeSeries(kayra_taulukko_nimet.get(28), Second.class);
-		    //BF1
-		    TimeSeries bf1 = new TimeSeries(kayra_taulukko_nimet.get(29), Second.class);
-		    //CFA
-		    TimeSeries cfa = new TimeSeries(kayra_taulukko_nimet.get(30), Second.class);
-		    //teho
-		    TimeSeries teho = new TimeSeries(kayra_taulukko_nimet.get(31), Second.class);
-		    //gp1-2
-		    TimeSeries gp1 = new TimeSeries(kayra_taulukko_nimet.get(32), Second.class);
-		    TimeSeries gp2 = new TimeSeries(kayra_taulukko_nimet.get(33), Second.class);
-		    TimeSeries ep15_gp1 = new TimeSeries(kayra_taulukko_nimet.get(34), Second.class);
-		    //bt51, 53, 54
-		    TimeSeries bt51 = new TimeSeries(kayra_taulukko_nimet.get(35), Second.class);
-		    TimeSeries bt53 = new TimeSeries(kayra_taulukko_nimet.get(36), Second.class);
-		    TimeSeries bt54 = new TimeSeries(kayra_taulukko_nimet.get(37), Second.class);
-		    TimeSeries prio = new TimeSeries(kayra_taulukko_nimet.get(38), Second.class);
-		    TimeSeries bt20 = new TimeSeries(kayra_taulukko_nimet.get(39), Second.class);
-		    TimeSeries bt21 = new TimeSeries(kayra_taulukko_nimet.get(40), Second.class);
-		    TimeSeries bt71 = new TimeSeries(kayra_taulukko_nimet.get(41), Second.class);
-		    //ep15 GP2
-		    TimeSeries ep15_gp2 = new TimeSeries(kayra_taulukko_nimet.get(42), Second.class);
-		    
-		    TimeSeries be1 = new TimeSeries(kayra_taulukko_nimet.get(43), Second.class);
-		    TimeSeries be2 = new TimeSeries(kayra_taulukko_nimet.get(44), Second.class);
-		    TimeSeries be3 = new TimeSeries(kayra_taulukko_nimet.get(45), Second.class);
-		    //hälytykset
-		    //TimeSeries alarm = new TimeSeries(kayra_taulukko_nimet.get(46), Second.class);
+		TimeSeries sisalt = new TimeSeries(kayra_taulukko_nimet.get(0), Second.class);
+        TimeSeries ulkolt = new TimeSeries(kayra_taulukko_nimet.get(1), Second.class);
+        TimeSeries bt2 = new TimeSeries(kayra_taulukko_nimet.get(2), Second.class);        
+        TimeSeries bt3 = new TimeSeries(kayra_taulukko_nimet.get(3), Second.class);
+        TimeSeries bt25 = new TimeSeries(kayra_taulukko_nimet.get(4), Second.class);
+        TimeSeries bt10 = new TimeSeries(kayra_taulukko_nimet.get(5), Second.class);
+        TimeSeries bt11 = new TimeSeries(kayra_taulukko_nimet.get(6), Second.class);
+        TimeSeries bt12 = new TimeSeries(kayra_taulukko_nimet.get(7), Second.class);
+        TimeSeries bt14 = new TimeSeries(kayra_taulukko_nimet.get(8), Second.class);
+        TimeSeries bt17 = new TimeSeries(kayra_taulukko_nimet.get(9), Second.class);
+        TimeSeries dm = new TimeSeries(kayra_taulukko_nimet.get(10), Second.class);
+        TimeSeries cs = new TimeSeries(kayra_taulukko_nimet.get(11), Second.class);
+        TimeSeries dtla = new TimeSeries(kayra_taulukko_nimet.get(12), Second.class);
+        TimeSeries dtbr = new TimeSeries(kayra_taulukko_nimet.get(13), Second.class);
+        TimeSeries cop = new TimeSeries(kayra_taulukko_nimet.get(14), Second.class);
+        //EP15
+        TimeSeries ep15_bt3 = new TimeSeries(kayra_taulukko_nimet.get(15), Second.class);
+	    TimeSeries ep15_bt10 = new TimeSeries(kayra_taulukko_nimet.get(16), Second.class);
+	    TimeSeries ep15_bt11 = new TimeSeries(kayra_taulukko_nimet.get(17), Second.class);
+	    TimeSeries ep15_bt12 = new TimeSeries(kayra_taulukko_nimet.get(18), Second.class);
+	    TimeSeries ep15_bt14 = new TimeSeries(kayra_taulukko_nimet.get(19), Second.class);
+	    TimeSeries ep15_bt17 = new TimeSeries(kayra_taulukko_nimet.get(20), Second.class);
+	    TimeSeries ep15_dtla = new TimeSeries(kayra_taulukko_nimet.get(21), Second.class);
+	    TimeSeries ep15_dtbr = new TimeSeries(kayra_taulukko_nimet.get(22), Second.class);
+	    TimeSeries ep15_cop = new TimeSeries(kayra_taulukko_nimet.get(23), Second.class);
+	    //käynti
+	    TimeSeries pca = new TimeSeries(kayra_taulukko_nimet.get(24), Second.class);
+	    TimeSeries ep15_prio = new TimeSeries(kayra_taulukko_nimet.get(25), Second.class);
+	    //KV
+	    TimeSeries bt7 = new TimeSeries(kayra_taulukko_nimet.get(26), Second.class);
+	    TimeSeries bt6 = new TimeSeries(kayra_taulukko_nimet.get(27), Second.class);
+	    //Suorasähkö
+	    TimeSeries kw_sahko = new TimeSeries(kayra_taulukko_nimet.get(28), Second.class);
+	    //BF1
+	    TimeSeries bf1 = new TimeSeries(kayra_taulukko_nimet.get(29), Second.class);
+	    //CFA
+	    TimeSeries cfa = new TimeSeries(kayra_taulukko_nimet.get(30), Second.class);
+	    //teho
+	    TimeSeries teho = new TimeSeries(kayra_taulukko_nimet.get(31), Second.class);
+	    //gp1-2
+	    TimeSeries gp1 = new TimeSeries(kayra_taulukko_nimet.get(32), Second.class);
+	    TimeSeries gp2 = new TimeSeries(kayra_taulukko_nimet.get(33), Second.class);
+	    TimeSeries ep15_gp1 = new TimeSeries(kayra_taulukko_nimet.get(34), Second.class);
+	    //bt51, 53, 54
+	    TimeSeries bt51 = new TimeSeries(kayra_taulukko_nimet.get(35), Second.class);
+	    TimeSeries bt53 = new TimeSeries(kayra_taulukko_nimet.get(36), Second.class);
+	    TimeSeries bt54 = new TimeSeries(kayra_taulukko_nimet.get(37), Second.class);
+	    TimeSeries prio = new TimeSeries(kayra_taulukko_nimet.get(38), Second.class);
+	    TimeSeries bt20 = new TimeSeries(kayra_taulukko_nimet.get(39), Second.class);
+	    TimeSeries bt21 = new TimeSeries(kayra_taulukko_nimet.get(40), Second.class);
+	    TimeSeries bt71 = new TimeSeries(kayra_taulukko_nimet.get(41), Second.class);
+	    //ep15 GP2
+	    TimeSeries ep15_gp2 = new TimeSeries(kayra_taulukko_nimet.get(42), Second.class);
+	    
+	    TimeSeries be1 = new TimeSeries(kayra_taulukko_nimet.get(43), Second.class);
+	    TimeSeries be2 = new TimeSeries(kayra_taulukko_nimet.get(44), Second.class);
+	    TimeSeries be3 = new TimeSeries(kayra_taulukko_nimet.get(45), Second.class);
+	    //hälytykset
+	    //TimeSeries alarm = new TimeSeries(kayra_taulukko_nimet.get(46), Second.class);
 
-        try {
-        	//new alarm entry
-        	Alarm a = null;
-        	alarmlist.clear();
-        	alarm_save = 0;
-        	b2b_alarm = false;
+    	//new alarm entry
+    	Alarm a = null;
+    	alarmlist.clear();
+    	alarm_save = 0;
+    	b2b_alarm = false;
+    	
+    	//new process entry
+    	Process p = null;
+    	processlist.clear();
+    	process_save = 0;
+    	
+        for (int j=0; j<logiaika.size();j++) {
         	
-        	//new process entry
-        	Process p = null;
-        	processlist.clear();
-        	process_save = 0;
-        	
-	        for (int j=0; j<logiaika.size();j++) {
+        	try {
 	        	sisalt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(0).get(j))/10);
 	        	ulkolt.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(1).get(j))/10);
 	        	bt2.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(2).get(j))/10);
@@ -1652,112 +1653,114 @@ public class LogintutkijaGUI extends JPanel
 	        	ep15_gp2.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(42).get(j)));
 	        	be1.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(43).get(j)));
 	        	be2.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(44).get(j)));
-	        	be3.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(45).get(j)));
-	        	
-	        	
-	        	//käynti - Prio 38 PCA 24
-	        	//haetaan isoin bt2
-	        	if (bt2.getDataItem(j).getValue().doubleValue() > bt2_max) {
-	        		bt2_max = bt2.getDataItem(j).getValue().doubleValue();
-	        		//konsoli.append("Uusi! BT2: " + bt2_max + ".\n");
-	        	}
-	        	
-	        	
-	        	//yhdistetään PCA ja Prio
-	        	int pcaprio = 0;
-	        	//konsoli.append("Prio: " + kayra_taulukko.get(38).get(j) + " pca: " + kayra_taulukko.get(24).get(j) + ".\n");
-	        	if (kayra_taulukko.get(38).get(j) < 10) { //talologgerissa 0, 1 tai 2 jostain syystä
-	        		switch(kayra_taulukko.get(24).get(j)) { //pca
-		  			  case 7:
-		  				pcaprio = 30; //Lämmitys
-		  				break;
-		  			  case 15:
-		  				pcaprio = 20; //KV
-		  			    break;
-		  			  case 2:
-		  				pcaprio = 10; //kiertovesipumppu pyörii
-		  			    break;
-		  			  case 0:
-		  				pcaprio = 10; //lepo
-		  			    break;
-		  			  default:
-		  				pcaprio = 0; //ei pitäisi tapahtua?
-	        		}
-	  			} else {
-	  				pcaprio = kayra_taulukko.get(38).get(j);
-	  			}
-	        	
-	        	//konsoli.append("Prio: " + kayra_taulukko.get(38).get(j) + " PCA: " + kayra_taulukko.get(24).get(j) + ".\n");
-	        	//konsoli.append("PCAPrio: " + pcaprio + ".\n");
-	        	
-	        	
-	            if (pcaprio > 0 && process_save == 0 && process_save != pcaprio) {
-	            	//konsoli.append("Uusi! Oli: " + process_save + ", on: " + pcaprio +  ".\n");
+	        	be3.add(new Second(Integer.parseInt(new SimpleDateFormat("ss").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("mm").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("HH").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("dd").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("MM").format(logiaika.get(j).getTime())), Integer.parseInt(new SimpleDateFormat("yyyy").format(logiaika.get(j).getTime()))), (double)(kayra_taulukko.get(45).get(j)));	
+        	} catch (Exception e) {
+            	//tupla-aika, Nibe joskus tekee tätä. Poistetaan aika ja vähennetään kierroksia yhdellä.
+            	logiaika.remove(j);
+            	j=j-1;
+            	konsoli.append("Trendien datavirhe: " + e.getMessage() + "\n");
+            }
+        	
+        	//käynti - Prio 38 PCA 24
+        	//haetaan isoin bt2
+        	if (bt2.getDataItem(j).getValue().doubleValue() > bt2_max) {
+        		bt2_max = bt2.getDataItem(j).getValue().doubleValue();
+        		//konsoli.append("Uusi! BT2: " + bt2_max + ".\n");
+        	}
+        	
+        	
+        	//yhdistetään PCA ja Prio
+        	int pcaprio = 0;
+        	//konsoli.append("Prio: " + kayra_taulukko.get(38).get(j) + " pca: " + kayra_taulukko.get(24).get(j) + ".\n");
+        	if (kayra_taulukko.get(38).get(j) < 10) { //talologgerissa 0, 1 tai 2 jostain syystä
+        		switch(kayra_taulukko.get(24).get(j)) { //pca
+	  			  case 7:
+	  				pcaprio = 30; //Lämmitys
+	  				break;
+	  			  case 15:
+	  				pcaprio = 20; //KV
+	  			    break;
+	  			  case 2:
+	  				pcaprio = 10; //kiertovesipumppu pyörii
+	  			    break;
+	  			  case 0:
+	  				pcaprio = 10; //lepo
+	  			    break;
+	  			  default:
+	  				pcaprio = 0; //ei pitäisi tapahtua?
+        		}
+  			} else {
+  				pcaprio = kayra_taulukko.get(38).get(j);
+  			}
+        	
+        	//konsoli.append("Prio: " + kayra_taulukko.get(38).get(j) + " PCA: " + kayra_taulukko.get(24).get(j) + ".\n");
+        	//konsoli.append("PCAPrio: " + pcaprio + ".\n");
+        	
+        	
+            if (pcaprio > 0 && process_save == 0 && process_save != pcaprio) {
+            	//konsoli.append("Uusi! Oli: " + process_save + ", on: " + pcaprio +  ".\n");
+            	p = new Process();
+            	//process start
+            	process_save = pcaprio;
+            	p.setProcess(process_save);
+            	p.setProcess_start_item(prio.getDataItem(j));
+            } else if (pcaprio != process_save) { //käynti muuttui, otetaan loppuaika ylös
+            	//konsoli.append("Muuttui! Oli: " + process_save + ", on: " + pcaprio +  ".\n");
+            	//alarm end
+            	p.setProcess_end_item(prio.getDataItem(j));
+            	process_save = pcaprio;
+            	//add to alarm list
+            	processlist.add(p);
+            	//jos uusi prosessi, luodaan uusi objekti
+            	if (pcaprio != 0) {
+	            	//new process start
 	            	p = new Process();
-	            	//process start
 	            	process_save = pcaprio;
 	            	p.setProcess(process_save);
 	            	p.setProcess_start_item(prio.getDataItem(j));
-	            } else if (pcaprio != process_save) { //käynti muuttui, otetaan loppuaika ylös
-	            	//konsoli.append("Muuttui! Oli: " + process_save + ", on: " + pcaprio +  ".\n");
-	            	//alarm end
-	            	p.setProcess_end_item(prio.getDataItem(j));
-	            	process_save = pcaprio;
-	            	//add to alarm list
-	            	processlist.add(p);
-	            	//jos uusi prosessi, luodaan uusi objekti
-	            	if (pcaprio != 0) {
-		            	//new process start
-		            	p = new Process();
-		            	process_save = pcaprio;
-		            	p.setProcess(process_save);
-		            	p.setProcess_start_item(prio.getDataItem(j));
-	            	}
-	            }
-	            //viimeinen ja prosessi jatkuu
-	            if (j+1 == kayra_taulukko.get(38).size() && pcaprio == process_save && process_save != 0) {
-	            	//konsoli.append("Viimeinen rivi: " + process_save + ".\n");
-	            	processlist.add(p);
-	            }
-	        	
-	        	//hälytys - index 46 - käytetään BT2:n viitteenä näyttämään virheet
-	            //etsi mahdolliset virheet
-	            if (kayra_taulukko.get(46).get(j) > 0 && alarm_save == 0 && alarm_save != kayra_taulukko.get(46).get(j)) {
-	            	//konsoli.append("Uusi! Oli: " + alarm_save + ", on: " + kayra_taulukko.get(46).get(j) +  ".\n");
+            	}
+            }
+            
+            //viimeinen ja prosessi jatkuu
+            if (j+1 == kayra_taulukko.get(38).size() && pcaprio == process_save && process_save != 0) {
+            	//konsoli.append("Viimeinen rivi: " + process_save + ".\n");
+            	processlist.add(p);
+            }
+            
+        	//hälytys - index 46 - käytetään BT2:n viitteenä näyttämään virheet
+            //etsi mahdolliset virheet
+            if (kayra_taulukko.get(46).get(j) > 0 && alarm_save == 0 && alarm_save != kayra_taulukko.get(46).get(j)) {
+            	//konsoli.append("Uusi! Oli: " + alarm_save + ", on: " + kayra_taulukko.get(46).get(j) +  ".\n");
+            	a = new Alarm();
+            	//alarm start
+            	alarm_save = kayra_taulukko.get(46).get(j);
+            	a.setAlarmnr(alarm_save);
+            	if (j > 0) { //eka rivi pois - jos hälytys jatkuu edelliseltä logilta, ei kirjata alkua
+            		a.setAlarm_start_item(bt2.getDataItem(j));
+            	}
+            } else if (kayra_taulukko.get(46).get(j) != alarm_save) { //hälytys muuttui, otetaan loppuaika ylös
+            	//konsoli.append("Muuttui! Oli: " + alarm_save + ", on: " + kayra_taulukko.get(46).get(j) +  ".\n");
+            	//alarm end
+            	a.setAlarm_end_item(bt2.getDataItem(j));
+            	alarm_save = kayra_taulukko.get(46).get(j);
+            	//add to alarm list
+            	alarmlist.add(a);
+            	//jos uusi häly, luodaan uusi objekti
+            	if (kayra_taulukko.get(46).get(j) != 0) {
+            		//peräkkäinen hälytys
+            		b2b_alarm = true;
+	            	//new alarm start
 	            	a = new Alarm();
-	            	//alarm start
 	            	alarm_save = kayra_taulukko.get(46).get(j);
 	            	a.setAlarmnr(alarm_save);
-	            	if (j > 0) { //eka rivi pois - jos hälytys jatkuu edelliseltä logilta, ei kirjata alkua
-	            		a.setAlarm_start_item(bt2.getDataItem(j));
-	            	}
-	            } else if (kayra_taulukko.get(46).get(j) != alarm_save) { //hälytys muuttui, otetaan loppuaika ylös
-	            	//konsoli.append("Muuttui! Oli: " + alarm_save + ", on: " + kayra_taulukko.get(46).get(j) +  ".\n");
-	            	//alarm end
-	            	a.setAlarm_end_item(bt2.getDataItem(j));
-	            	alarm_save = kayra_taulukko.get(46).get(j);
-	            	//add to alarm list
-	            	alarmlist.add(a);
-	            	//jos uusi häly, luodaan uusi objekti
-	            	if (kayra_taulukko.get(46).get(j) != 0) {
-	            		//peräkkäinen hälytys
-	            		b2b_alarm = true;
-		            	//new alarm start
-		            	a = new Alarm();
-		            	alarm_save = kayra_taulukko.get(46).get(j);
-		            	a.setAlarmnr(alarm_save);
-		            	a.setAlarm_start_item(bt2.getDataItem(j));
-	            	}
-	            }
-	            //viimeinen ja hälytys jatkuu
-	            if (j+1 == kayra_taulukko.get(46).size() && kayra_taulukko.get(46).get(j) == alarm_save && alarm_save != 0) {
-	            	//konsoli.append("Viimeinen rivi: " + alarm_save + ".\n");
-	            	alarmlist.add(a);
-	            }
-	        }
-        }       
-        catch (Exception e) {
-        	konsoli.append("Trendien datavirhe: " + e.getMessage());
+	            	a.setAlarm_start_item(bt2.getDataItem(j));
+            	}
+            }
+            //viimeinen ja hälytys jatkuu
+            if (j+1 == kayra_taulukko.get(46).size() && kayra_taulukko.get(46).get(j) == alarm_save && alarm_save != 0) {
+            	//konsoli.append("Viimeinen rivi: " + alarm_save + ".\n");
+            	alarmlist.add(a);
+            }
         }
         
         final TimeSeriesCollection dataset = new TimeSeriesCollection();
