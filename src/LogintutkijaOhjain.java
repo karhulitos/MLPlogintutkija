@@ -661,7 +661,7 @@ public class LogintutkijaOhjain {
 	                			//tarkistetaan validit arvot (-32768 on piuha irti anturista)
 	            				if (tiedostot.get(i)[j][a].equals("-32768")) {
 	            					ikkuna.kirjoitaKonsolille( "Laiton arvo \"" + tiedostot.get(i)[j][a] + "\" " + (i+1) + ". tiedostossa, rivillä " + (j+1) + " kentässä " + (a+1) + "  - tietuetta ei huomioida. Onko anturin piuha irti?\n" );
-	            					continue rivi;
+	            					//continue rivi;
 	            				} 
 	            			}
             			}
@@ -2533,7 +2533,9 @@ public class LogintutkijaOhjain {
     		int arvoint = 0;
     		if (arvo.contains(".") || nibecontroller.equals("S")) { //double ehkä
     			arvoint = (int)(Double.parseDouble(arvo)*kerroin);
-    		} else {
+    		} else if (arvo.contains("-32768")) {
+    			//0 laittomille arvoille
+    	} else {
     			arvoint = Integer.parseInt(arvo)  * kerroin;
     		}
     		return arvoint;
